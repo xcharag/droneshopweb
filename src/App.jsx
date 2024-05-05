@@ -4,16 +4,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from "./components/header/header.jsx";
 import Home from "./components/home/home.jsx";
 import Footer from "./components/footer/footer.jsx";
+import {Container} from "react-bootstrap";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <div>
-        <Header/>
-        <Home/>
-        <Footer/>
-    </div>
+      <Container fluid>
+          <Header/>
+          <Home/>
+          <Footer/>
+      </Container>
   )
 }
 

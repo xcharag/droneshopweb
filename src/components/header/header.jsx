@@ -1,8 +1,15 @@
 import React from "react";
 import "./header.css";
 import {Button, Container, Nav, Navbar} from "react-bootstrap";
+import {useNavigate} from "react-router-dom";
 
 const Header = () => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate("/login");
+    }
+
     return (
         <Navbar bg="dark" variant="dark" expand="lg" fixed="top">
             <Container>
@@ -17,7 +24,7 @@ const Header = () => {
                         </Nav.Link>
                     </Nav>
                     <Nav className="ms-3">
-                        <Button variant="primary" className="ms-2 rounded-pill shadow">Iniciar sesión</Button>
+                        <Button onClick={handleClick} variant="primary" className="ms-2 rounded-pill shadow">Iniciar sesión</Button>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

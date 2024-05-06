@@ -7,6 +7,7 @@ import Login from "./components/login/login.jsx";
 import {Container} from "react-bootstrap";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Home from './components/home/home.jsx';
+import AdmClient from './components/admClients/admClient.jsx';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home/>} />
                     <Route path="/login" element={<Login/>} />
+                    <Route path="/admClient" element={<AdmClient/>} />
                 </Routes>
 
             </Container>

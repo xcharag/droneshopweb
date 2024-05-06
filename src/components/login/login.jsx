@@ -30,7 +30,6 @@ const Login = () => {
         }
 
         try {
-            // Realizar la autenticación
             const response = await fetch('http://localhost:4000/', {
                 method: 'POST',
                 headers: {
@@ -61,7 +60,6 @@ const Login = () => {
 
             const token = responseData.data.authSellerLogin.token;
 
-            // Obtener información del usuario
             const userResponse = await fetch('http://localhost:4000/', {
                 method: 'POST',
                 headers: {
@@ -90,13 +88,11 @@ const Login = () => {
                 setAuthError('Error al obtener la información del usuario');
                 return;
             }
-            console.log('Información del usuario:', userData.data.getSeller);
-
-
             localStorage.setItem('seller', JSON.stringify(userData.data.getSeller));
 
-            // Redireccionar a la página deseada
-            history('/');
+            localStorage.setItem('token', token);
+
+            history('/admClient');
         } catch (error) {
             console.error(error);
             setAuthError('Error al iniciar sesión');

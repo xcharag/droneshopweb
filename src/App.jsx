@@ -6,16 +6,21 @@ import Header from './components/header/header.jsx';
 import Footer from './components/footer/footer.jsx';
 import Login from './components/login/login.jsx';
 import Home from './components/home/home.jsx';
+
+import AdmClient from './components/admClients/admClient.jsx';
+
 import { createApolloClient } from './apolloClient'; // Import function to create Apollo Client instance
 
 const containerStyle = {
     padding: 0,
 };
 
+
 function App() {
     const apolloClient = createApolloClient(); // Create an instance of Apollo Client
 
     return (
+
         <ApolloProvider client={apolloClient} fluid>
             <Router>
                 <Header />

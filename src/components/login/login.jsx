@@ -54,6 +54,7 @@ const Login = () => {
         }
 
         try {
+
             const { data } = await loginMutation({ variables: { email, password } });
             const token = data.authSellerLogin.token;
 
@@ -64,6 +65,7 @@ const Login = () => {
 
             // Redireccionar a la página deseada
             navigate('/');
+
         } catch (error) {
             console.error(error);
             setAuthError('Error al iniciar sesión');

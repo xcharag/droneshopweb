@@ -1,5 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {useMutation, gql, useLazyQuery} from '@apollo/client';
+
+const LOGIN_MUTATION = gql`
+  mutation AuthSellerLogin($email: String!, $password: String!) {
+    authSellerLogin(input: { email: $email, password: $password }) {
+      token
+    }
+  }
+`;
+
+const GET_SELLER_QUERY = gql`
+  query GetSeller($token: String!) {
+    getSeller(token: $token) {
+      id
+      name
+      lastName
+      email
+      created
+    }
+  }
+`;
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -7,7 +28,10 @@ const Login = () => {
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [authError, setAuthError] = useState('');
-    const history = useNavigate();
+    const navigate = useNavigate();
+
+    const [loginMutation] = useMutation(LOGIN_MUTATION);
+    const [getSellerQuery] = useLazyQuery(GET_SELLER_QUERY);
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
@@ -30,73 +54,16 @@ const Login = () => {
         }
 
         try {
-            // Realizar la autenticación
-            const response = await fetch('http://localhost:4000/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: `
-                  mutation Mutation($input: sellerAuthentication) {
-                      authSellerLogin(input: $input) {
-                        token
-                      }
-                    }
-                    `,
-                    variables: {
-                        input: {
-                            email,
-                            password
-                        }
-                    }
-                })
-            });
+            const { data } = await loginMutation({ variables: { email, password } });
+            const token = data.authSellerLogin.token;
 
-            const responseData = await response.json();
-            if (responseData.errors) {
-                setAuthError('Usuario o contraseña incorrectos');
-                return;
-            }
-
-            const token = responseData.data.authSellerLogin.token;
-
-            // Obtener información del usuario
-            const userResponse = await fetch('http://localhost:4000/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: `
-                query GetSeller($token: String) {
-                  getSeller(token: $token) {
-                    id
-                    name
-                    lastName
-                    email
-                    created
-                  }
-                    }
-                    `,
-                    variables: {
-                        token
-                    }
-                })
-            });
-
-            const userData = await userResponse.json();
-            if (userData.errors) {
-                setAuthError('Error al obtener la información del usuario');
-                return;
-            }
+            const userData = await getSellerQuery({ variables: { token } });
             console.log('Información del usuario:', userData.data.getSeller);
-
 
             localStorage.setItem('seller', JSON.stringify(userData.data.getSeller));
 
             // Redireccionar a la página deseada
-            history('/');
+            navigate('/');
         } catch (error) {
             console.error(error);
             setAuthError('Error al iniciar sesión');
@@ -109,7 +76,7 @@ const Login = () => {
     };
 
     return (
-        <div className="login d-flex justify-content-center align-items-center vh-100 bg-dark">
+        <div className="login d-flex justify-content-center align-items-center vh-100">
             <div className='p-5 bg-light rounded'>
                 <form id='form-login' onSubmit={handleSubmit}>
                     <h3 className="mb-4"> Login </h3>
@@ -150,4 +117,3 @@ const Login = () => {
 };
 
 export default Login;
-

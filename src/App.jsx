@@ -1,28 +1,34 @@
-import { useState } from 'react'
-import './App.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Header from "./components/header/header.jsx";
-import Footer from "./components/footer/footer.jsx";
-import Login from "./components/login/login.jsx";
-import {Container} from "react-bootstrap";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import React from 'react';
+import { ApolloProvider } from '@apollo/client';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import Header from './components/header/header.jsx';
+import Footer from './components/footer/footer.jsx';
+import Login from './components/login/login.jsx';
 import Home from './components/home/home.jsx';
+import { createApolloClient } from './apolloClient'; // Import function to create Apollo Client instance
+
+const containerStyle = {
+    padding: 0,
+};
 
 function App() {
+    const apolloClient = createApolloClient(); // Create an instance of Apollo Client
 
     return (
-        <Router>
-            <Header />
-            <Container fluid>
-                <Routes>
-                    <Route path="/" element={<Home/>} />
-                    <Route path="/login" element={<Login/>} />
-                </Routes>
-
-            </Container>
-            <Footer />
-        </Router>
-    )
+        <ApolloProvider client={apolloClient} fluid>
+            <Router>
+                <Header />
+                <Container fluid style={containerStyle}>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/login" element={<Login />} />
+                    </Routes>
+                </Container>
+                <Footer />
+            </Router>
+        </ApolloProvider>
+    );
 }
 
-export default App
+export default App;

@@ -54,7 +54,6 @@ const Login = () => {
         }
 
         try {
-
             const { data } = await loginMutation({ variables: { email, password } });
             const token = data.authSellerLogin.token;
 
@@ -62,6 +61,7 @@ const Login = () => {
             console.log('Información del usuario:', userData.data.getSeller);
 
             localStorage.setItem('seller', JSON.stringify(userData.data.getSeller));
+            localStorage.setItem('token', token);
 
             // Redireccionar a la página deseada
             navigate('/');

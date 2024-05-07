@@ -28,6 +28,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/login" element={<Login />} />
+                        <Route path="/admClient" element={<AdmClient />} />
                     </Routes>
                 </Container>
                 <Footer />

@@ -1,26 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {useMutation, gql, useLazyQuery} from '@apollo/client';
+import {useMutation, useLazyQuery} from '@apollo/client';
+import {GET_SELLER_QUERY, LOGIN_MUTATION} from './queries/queries.js';
 
-const LOGIN_MUTATION = gql`
-  mutation AuthSellerLogin($email: String!, $password: String!) {
-    authSellerLogin(input: { email: $email, password: $password }) {
-      token
-    }
-  }
-`;
-
-const GET_SELLER_QUERY = gql`
-  query GetSeller($token: String!) {
-    getSeller(token: $token) {
-      id
-      name
-      lastName
-      email
-      created
-    }
-  }
-`;
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -64,7 +46,7 @@ const Login = () => {
             localStorage.setItem('token', token);
 
             // Redireccionar a la página deseada
-            navigate('/');
+            navigate('/admClient');
 
         } catch (error) {
             console.error(error);

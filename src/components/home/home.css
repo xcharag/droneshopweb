@@ -9,12 +9,22 @@
 }
 
 .home-banner{
-    height: 500px;
+    height: 700px;
     align-items: center;
     justify-content: center;
-    background-image: url("../../assets/banner.jpg");
+    background-image: url("../../assets/banner1.jpg");
     background-size: cover;
     background-position: center;
+}
+
+.home-about {
+    padding-top: 25px; /* Adjust the value as needed */
+    padding-bottom: 150px; /* Adjust the value as needed */
+}
+
+.home-topproducts {
+    padding-top: 100px; /* Adjust the value as needed */
+    padding-bottom: 50px; /* Adjust the value as needed */
 }
 
 .home-banner-content{
@@ -68,3 +78,18 @@ Form{
     margin-top: auto;
 }
 
+@keyframes droneAnimation {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.drone-scroll-animation {
+    animation: droneAnimation 7s ease-in-out infinite;
+}

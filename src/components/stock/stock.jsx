@@ -5,12 +5,14 @@ import AddProductModal from "./modals/AddProductModal.jsx";
 import EditProductModal from "./modals/EditProductModal.jsx";
 import {useLazyQuery} from "@apollo/client";
 import {GET_PRODUCTS} from "./gql/query.js";
+import DeleteProductModal from "./modals/DeleteProductModal.jsx";
 
 const Stock = () => {
     const [products, setProducts] = useState([]);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [showDeleteProductModal, setShowDeleteProductModal] = useState(false);
     const [showAddProductModal, setShowAddProductModal] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
     const [productToEdit, setProductToEdit] = useState(null);
     const navigate = useNavigate();
     const [product, setProduct] = useState({
@@ -32,11 +34,9 @@ const Stock = () => {
 
     const getProducts = async () => {
         try {
-            const products = await getAllProducts({fetchPolicy:'network-only'});
-            console.log('Pasando por aqui');
+            const products = await getAllProducts({fetchPolicy: 'network-only'});
             if (products) {
                 setProducts(products.data.getAllProducts);
-                console.log(products.data.getAllProducts);
             } else {
                 console.error('No hay productos');
             }
@@ -44,8 +44,6 @@ const Stock = () => {
             throw new Error(e.message);
         }
     }
-
-
 
     const openAddModal = () => {
         setShowAddProductModal(true);
@@ -62,12 +60,20 @@ const Stock = () => {
         setShowEditProductModal(false);
     }
 
+    const openDeleteModal = () => {
+        setShowDeleteProductModal(true);
+    }
+
+    const closeDeleteModal = () => {
+        setShowDeleteProductModal(false);
+    }
+
     return (
         <div className='text-white p-4 mt-5'>
-            <div className='d-flex justify-content-between'>
+            <div className='d-flex justify-content-between mb-2'>
                 <h2>Administrar Productos</h2>
+                <Button variant='success' size='sm'>Drones más vendidos</Button>
             </div>
-
             <Table striped bordered hover variant='dark'>
                 <thead>
                 <tr>
@@ -94,7 +100,10 @@ const Stock = () => {
                                 setProductToEdit(product);
                                 openEditModal();
                             }}>Editar</Button>
-                            <Button variant='danger' className='m-lg-2'>Eliminar</Button>
+                            <Button variant='danger' className='m-lg-2' onClick={() => {
+                                setProductToDelete(product);
+                                openDeleteModal();
+                            }}>Eliminar</Button>
                         </td>
                     </tr>
                 ))}
@@ -113,6 +122,13 @@ const Stock = () => {
                 show={showEditProductModal}
                 handleClose={closeEditModal}
                 productData={productToEdit}
+                reloadProducts={getProducts}
+            />
+
+            <DeleteProductModal
+                show={showDeleteProductModal}
+                handleClose={closeDeleteModal}
+                product={productToDelete}
                 reloadProducts={getProducts}
             />
         </div>

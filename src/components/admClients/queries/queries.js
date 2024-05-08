@@ -41,17 +41,17 @@ export const  DELETE_CLIENT = gql `
 `;
 
 export const ADD_CLIENT = gql`
-     mutation AddClient($input: InputClient!) {
-        newClient(input: $input) {
-           id
-           name
-           lastName
-           company
-           phoneNumber
-           email
-           password
-           created
-           seller
-        }
-     }
+mutation NewClient($input: inputClient) {
+  newClient(input: $input) {
+    id
+    name
+    lastName
+    company
+    phoneNumber
+    email
+    password
+    created
+    seller
+  }
+}
 `;

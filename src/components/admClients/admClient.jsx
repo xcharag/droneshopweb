@@ -129,7 +129,7 @@ const AdmClient = () => {
             });
             console.log(responseData);
             setShowAddModal(false);
-            getClients();
+            window.location.reload();
         } catch (error) {
             console.error('Error al agregar cliente:', error);
         }

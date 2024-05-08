@@ -6,10 +6,9 @@ import Header from './components/header/header.jsx';
 import Footer from './components/footer/footer.jsx';
 import Login from './components/login/login.jsx';
 import Home from './components/home/home.jsx';
-
 import AdmClient from './components/admClients/admClient.jsx';
-
-import { createApolloClient } from './apolloClient'; // Import function to create Apollo Client instance
+import { createApolloClient } from './apolloClient';
+import Staticsidebar from "./components/sidebar/staticsidebar.jsx";
 
 const containerStyle = {
     padding: 0,
@@ -20,21 +19,29 @@ function App() {
     const apolloClient = createApolloClient(); // Create an instance of Apollo Client
 
     return (
-
         <ApolloProvider client={apolloClient} fluid>
             <Router>
-                <Header />
                 <Container fluid style={containerStyle}>
                     <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/admClient" element={<AdmClient />} />
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/login" element={<Login/>}/>
+                        <Route path="/admClient" element={<AdmClientWithSidebar/>}/>
                     </Routes>
                 </Container>
-                <Footer />
-            </Router>
-        </ApolloProvider>
+                <Footer/>
+        </Router>
+    </ApolloProvider>
     );
 }
-
+function AdmClientWithSidebar() {
+    return (
+        <div className="main-content" style={{ display: 'flex' }}>
+            <Staticsidebar/> {/* Sidebar estático */}
+            <div style={{ flex: 1, padding: '20px' }}>
+                {/* Contenido específico de AdmClient */}
+                <AdmClient/>
+            </div>
+        </div>
+    );
+}
 export default App;

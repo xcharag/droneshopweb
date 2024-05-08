@@ -5,7 +5,6 @@ import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import { FaCamera, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'; // Import icons from react-icons library
 import { TbDrone } from 'react-icons/tb'; // Import custom icon
 
-
 const Home = () => {
     const navigate = useNavigate(); // Obtener la historia de un objeto de navegación
 

@@ -3,7 +3,6 @@ import { Button, Modal, Table, Form } from 'react-bootstrap';
 import {useQuery, useMutation, useLazyQuery} from '@apollo/client';
 import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT } from './queries/queries.js'; // Asegúrate de importar tus consultas GraphQL
 
-
 const AdmClient = () => {
     const [clients, setClients] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);

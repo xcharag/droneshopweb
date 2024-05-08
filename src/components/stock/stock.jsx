@@ -112,7 +112,9 @@ const Stock = () => {
             <EditProductModal
                 show={showEditProductModal}
                 handleClose={closeEditModal}
-                productData={productToEdit}/>
+                productData={productToEdit}
+                reloadProducts={getProducts}
+            />
         </div>
     );
 }

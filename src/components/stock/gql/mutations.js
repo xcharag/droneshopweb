@@ -12,4 +12,18 @@ export const NEW_PRODUCT = gql `
             specifications
         }
     }
-`
+`;
+
+export const UPDATE_PRODUCT = gql`
+    mutation ProductUpdate($productUpdateId: ID!, $input: inputProduct) {
+        productUpdate(id: $productUpdateId, input: $input) {
+            id
+            name
+            stock
+            price
+            created
+            model
+            specifications
+        }
+    }
+`;

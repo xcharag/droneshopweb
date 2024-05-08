@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Button, Form, Modal, ModalBody, ModalHeader, ModalTitle} from "react-bootstrap";
 import {useMutation} from "@apollo/client";
 import {NEW_PRODUCT} from "../gql/mutations.js";
@@ -20,7 +20,7 @@ const AddProductModal = ({show, handleClose, reloadProducts}) => {
 
     const handleAddProduct = async () => {
         try {
-           const {data} = await addProduct({
+           await addProduct({
                 variables: {
                     input: {
                         name: formData.name,

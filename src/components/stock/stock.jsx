@@ -3,6 +3,8 @@ import {useNavigate} from "react-router-dom";
 import {Button, Table} from "react-bootstrap";
 import AddProductModal from "./modals/AddProductModal.jsx";
 import EditProductModal from "./modals/EditProductModal.jsx";
+import {useLazyQuery} from "@apollo/client";
+import {GET_PRODUCTS} from "./gql/query.js";
 
 const Stock = () => {
     const [products, setProducts] = useState([]);
@@ -20,6 +22,8 @@ const Stock = () => {
         specifications: ''
     });
 
+    const [getAllProducts] = useLazyQuery(GET_PRODUCTS);
+
     useEffect(() => {
         getProducts();
     }, []);
@@ -28,33 +32,11 @@ const Stock = () => {
 
     const getProducts = async () => {
         try {
-            seller = JSON.parse(localStorage.getItem('seller'));
-            const response = await fetch('http://localhost:4000/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
-                },
-                body: JSON.stringify({
-                    'query': `
-                   query GetAllProducts {
-                      getAllProducts {
-                        id
-                        name
-                        stock
-                        price
-                        created
-                        model
-                        specifications
-                      }
-                    }
-                   `,
-                })
-            });
-            const responseData = await response.json();
-
-            if (responseData.data && responseData.data.getAllProducts) {
-                setProducts(responseData.data.getAllProducts);
+            const products = await getAllProducts({fetchPolicy:'network-only'});
+            console.log('Pasando por aqui');
+            if (products) {
+                setProducts(products.data.getAllProducts);
+                console.log(products.data.getAllProducts);
             } else {
                 console.error('No hay productos');
             }
@@ -62,6 +44,8 @@ const Stock = () => {
             throw new Error(e.message);
         }
     }
+
+
 
     const openAddModal = () => {
         setShowAddProductModal(true);
@@ -93,6 +77,7 @@ const Stock = () => {
                     <th>Precio</th>
                     <th>Modelo</th>
                     <th>Especificaciones</th>
+                    <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -122,6 +107,7 @@ const Stock = () => {
             <AddProductModal
                 show={showAddProductModal}
                 handleClose={closeAddModal}
+                reloadProducts={getProducts}
             />
             <EditProductModal
                 show={showEditProductModal}

@@ -100,7 +100,7 @@ const AdmClient = () => {
                 }
             });
             setShowEditModal(false);
-            getClients();
+            await getClients();
         } catch (error) {
             console.error('Error al cambiar datos del cliente', error);
         }

@@ -4,6 +4,7 @@ import { useMutation, useLazyQuery } from '@apollo/client';
 import { GET_SELLER_QUERY, LOGIN_MUTATION } from './queries/queries.js';
 import { Button } from "react-bootstrap";
 import '../login/login.css';
+import Header from "../header/header.jsx";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -61,6 +62,7 @@ const Login = () => {
 
     return (
         <section className="login-banner">
+            <Header />
         <div className="login d-flex justify-content-center align-items-center vh-100">
             <div className='p-5 bg-light rounded opacity-75'>
                 <form id='form-login' onSubmit={handleSubmit}>

@@ -30,6 +30,8 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validación de campos de email y contraseña
         if (!email || !password || !validateEmail(email)) {
             setEmailError(email ? 'El formato del email no es válido' : 'El campo de email es obligatorio');
             setPasswordError(password ? '' : 'El campo de contraseña es obligatorio');
@@ -39,9 +41,7 @@ const Login = () => {
         try {
             const { data } = await loginMutation({ variables: { email, password } });
             const token = data.authSellerLogin.token;
-
             const userData = await getSellerQuery({ variables: { token } });
-            console.log('Información del usuario:', userData.data.getSeller);
 
             localStorage.setItem('seller', JSON.stringify(userData.data.getSeller));
             localStorage.setItem('token', token);
@@ -50,7 +50,13 @@ const Login = () => {
 
         } catch (error) {
             console.error(error);
-            setAuthError('Error al iniciar sesión');
+            if (error.message === 'El vendedor no existe') {
+                setAuthError('Usuario no registrado');
+            } else if (error.message.includes('password')) {
+                setAuthError('Email o contraseña incorrectos');
+            } else {
+                setAuthError('Error al iniciar sesión');
+            }
         }
     };
 

@@ -58,12 +58,10 @@ const SignUp = () => {
                 }, 5000);
             }
         } catch (error) {
-            if (error.message.includes('unique constraint would be violated')) {
-                setAuthError('El email ya está en uso');
-            } else {
-                setAuthError('Ha ocurrido un error. Por favor, inténtelo de nuevo.');
-            }
+
+            setAuthError('Ha ocurrido un error. Por favor, inténtelo de nuevo.');
         }
+
     };
 
 

@@ -1,8 +1,13 @@
 import React from 'react';
 import {Button, Nav, Navbar} from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function staticSidebar() {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const navigate = useNavigate();
+    const handleGoBack = () => {
+        navigate(-1); // -1 para ir a la página anterior
+    };
     return (
         <div style={{
             width: '200px',
@@ -21,6 +26,9 @@ function staticSidebar() {
                     <div className="d-grid gap-2">
                         <Button as={Link} to="/" variant="secondary" size= "sm" className="mb-2">Inicio</Button>
                         <Button as={Link} to="/admClient" variant="secondary" size= "sm" block>Administrar Clientes</Button>
+                        <Button variant="outline-light" size="sm" onClick={handleGoBack}>
+                            Volver atrás
+                        </Button>
                     </div>
                 </div>
             </Nav>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Modal, ModalBody, ModalHeader} from "react-bootstrap";
+import {Button, ListGroup, Modal, ModalBody, ModalFooter, ModalHeader} from "react-bootstrap";
 import {useLazyQuery, useMutation} from "@apollo/client";
 import {GET_TOP_SELLING_PRODUCTS} from "../gql/query.js";
 const MostSoldDronesModal = ({show, handleHide}) => {
@@ -28,12 +28,26 @@ const MostSoldDronesModal = ({show, handleHide}) => {
     return (
         <Modal show={show} onHide={handleHide}>
             <ModalHeader closeButton>
-                Drones más vendidos
+                <Modal.Title className='fw-bold'>Drones más vendidos</Modal.Title>
             </ModalHeader>
             <ModalBody>
-                <p><strong>Drones más vendidos</strong></p>
-
+                <ListGroup as='ol' numbered>
+                    {topSellingProducts.map((product) => (
+                        <ListGroup.Item key={product.id}
+                                        as='li'
+                                        className='d-flex justify-content-between align-items-start'
+                        >
+                            <div className="ms-2 me-auto">
+                                <div className="fw-bold">{product.name}</div>
+                                <p>Cantidad vendida: {product.totalQuantity}</p>
+                            </div>
+                        </ListGroup.Item>
+                    ))}
+                </ListGroup>
             </ModalBody>
+            <ModalFooter>
+                <Button variant='primary' onClick={handleHide}>Cerrar</Button>
+            </ModalFooter>
         </Modal>
     )
 }

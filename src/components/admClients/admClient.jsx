@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Table, Form } from 'react-bootstrap';
 import {useMutation, useLazyQuery} from '@apollo/client';
-import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT, GET_REPORT_BEST_CLIENTS } from './queries/queries.js'; // Asegúrate de importar tus consultas GraphQL
+import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT, GET_REPORT_BEST_CLIENTS } from './gql/queries.js'; // Asegúrate de importar tus consultas GraphQL
 
 
 const AdmClient = () => {

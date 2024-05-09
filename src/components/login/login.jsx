@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useLazyQuery } from '@apollo/client';
-import { GET_SELLER_QUERY, LOGIN_MUTATION } from './queries/queries.js';
+import { GET_SELLER_QUERY, LOGIN_MUTATION } from './gql/queries.js';
 import { Button } from "react-bootstrap";
 import '../login/login.css';
 

@@ -14,9 +14,10 @@ function staticSidebar() {
             backgroundColor: '#212529',
             color:'white',
             padding: '20px',
-            minHeight: '100vh', // Agregar esta línea
-            display: 'flex', // Agregar esta línea
-            flexDirection: 'column', // Agregar esta línea
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
         }}>
             <Nav className="flex-column" style={{ flexGrow: 1 }}>
                 <Navbar.Brand as={Link} to="/" className="text-center w-100 mb-4" style={{ fontSize: '24px' }}>
@@ -26,8 +27,8 @@ function staticSidebar() {
                     <div className="d-grid gap-2">
                         <Button as={Link} to="/" variant="secondary" size= "sm" className="mb-2">Inicio</Button>
                         <Button as={Link} to="/admClient" variant="secondary" size= "sm" block>Administrar Clientes</Button>
-                        <Button variant="outline-light" size="sm" onClick={handleGoBack}>
-                            Volver atrás
+                        <Button variant="outline-light" size="sm" onClick={handleGoBack} style={{marginTop: '130px'}}>
+                        Volver atrás
                         </Button>
                     </div>
                 </div>

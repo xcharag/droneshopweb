@@ -39,3 +39,8 @@
 .read-the-docs {
   color: #888;
 }
+.main-content {
+  margin-left: 200px; /* Ajusta este valor según el ancho de tu Sidebar */
+  padding: 20px; /* Agrega un espacio interno para separar el contenido del borde */
+}
+

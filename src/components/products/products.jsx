@@ -5,6 +5,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_PRODUCTS_QUERY } from "./queries/queries.js";
 import {RiPriceTag3Line} from "react-icons/ri";
 import {BsSearch} from "react-icons/bs";
+import Header from "../header/header.jsx";
 
 const ProductPage = () => {
     const [products, setProducts] = useState([]);
@@ -22,6 +23,7 @@ const ProductPage = () => {
 
     return (
         <Container className="pb-5 mb-5">
+            <Header />
             <h1 className="text-center mt-5 text-success fw-bold">Todos los productos</h1>
             <div className="round-corner-square justify-content-center">
                 <Row>

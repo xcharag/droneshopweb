@@ -12,6 +12,7 @@ import Cart from "./components/cart/cart.jsx";
 import Products from "./components/products/products.jsx";
 
 import { createApolloClient } from './apolloClient';
+import Stock from "./components/stock/Stock.jsx";
 
 const containerStyle = {
     paddingTop: '70px',
@@ -35,6 +36,7 @@ function App() {
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/products" element={<Products />} />
                         <Route path="/signUp" element={<SignUp/>}/>
+                        <Route path="/stock" element={<Stock/>}/>
                     </Routes>
                 </Container>
                 <Footer />

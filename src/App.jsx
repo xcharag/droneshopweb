@@ -6,6 +6,7 @@ import Header from './components/header/header.jsx';
 import Footer from './components/footer/footer.jsx';
 import Login from './components/login/login.jsx';
 import Home from './components/home/home.jsx';
+import SignUp from './components/sign-up/signUp.jsx';
 
 import AdmClient from './components/admClients/admClient.jsx';
 
@@ -29,6 +30,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/admClient" element={<AdmClient />} />
+                        <Route path="/signUp" element={<SignUp/>}/>
                     </Routes>
                 </Container>
                 <Footer />

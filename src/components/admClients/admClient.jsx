@@ -14,7 +14,7 @@ const AdmClient = () => {
     const [clientToEdit, setClientToEdit] = useState(null);
     const [clientToDelete, setClientToDelete] = useState(null);
     const [clientToAdd, setClientToAdd] = useState(null);
-    const [client, setClient] = useState({
+    const [client] = useState({
         name: '',
         lastName: '',
         company: '',
@@ -78,8 +78,6 @@ const AdmClient = () => {
 
     const handleEditClient = async () => {
         try {
-            console.log(clientToEdit.id);
-
             const seller = JSON.parse(localStorage.getItem('seller'));
             await updateClient({
 

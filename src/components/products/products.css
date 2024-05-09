@@ -1,0 +1,20 @@
+.custom-range-input {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    background: #d3d3d3;
+    outline: none;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.custom-range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+}

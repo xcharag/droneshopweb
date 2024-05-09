@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {useMutation, useLazyQuery} from '@apollo/client';
 import {GET_SELLER_QUERY, LOGIN_MUTATION} from './queries/queries.js';
+import Header from "../header/header.jsx";
 
 
 const Login = () => {
@@ -61,6 +62,7 @@ const Login = () => {
 
     return (
         <div className="login d-flex justify-content-center align-items-center vh-100">
+            <Header/>
             <div className='p-5 bg-light rounded'>
                 <form id='form-login' onSubmit={handleSubmit}>
                     <h3 className="mb-4"> Login </h3>

@@ -3,7 +3,8 @@ import "./home.css";
 import { useNavigate } from "react-router-dom"; // Import useHistory hook
 import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import { FaCamera, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'; // Import icons from react-icons library
-import { TbDrone } from 'react-icons/tb'; // Import custom icon
+import { TbDrone } from 'react-icons/tb';
+import Header from "../header/header.jsx"; // Import custom icon
 
 const Home = () => {
     const navigate = useNavigate(); // Obtener la historia de un objeto de navegación
@@ -15,6 +16,7 @@ const Home = () => {
 
     return (
         <div className="home">
+            <Header/>
             <section className="home-banner drone-scroll-animation">
                 <div className="home-banner-content">
                     <h1 className="text-success">AirPixel</h1>

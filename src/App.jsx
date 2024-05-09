@@ -10,10 +10,11 @@ import Home from './components/home/home.jsx';
 import AdmClient from './components/admClients/admClient.jsx';
 
 import { createApolloClient } from './apolloClient';
-import Stock from "./components/stock/stock.jsx"; // Import function to create Apollo Client instance
+import Stock from "./components/stock/Stock.jsx"; // Import function to create Apollo Client instance
 
 const containerStyle = {
     padding: 0,
+    height: '100vh'
 };
 
 

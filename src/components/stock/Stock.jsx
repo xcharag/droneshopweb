@@ -6,6 +6,7 @@ import EditProductModal from "./modals/EditProductModal.jsx";
 import {useLazyQuery} from "@apollo/client";
 import {GET_PRODUCTS} from "./gql/query.js";
 import DeleteProductModal from "./modals/DeleteProductModal.jsx";
+import MostSoldDronesModal from "./modals/MostSoldDronesModal.jsx";
 
 const Stock = () => {
     const [products, setProducts] = useState([]);
@@ -14,6 +15,7 @@ const Stock = () => {
     const [showAddProductModal, setShowAddProductModal] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
     const [productToEdit, setProductToEdit] = useState(null);
+    const [showMostSoldDronesModal, setShowMostSoldDronesModal] = useState(false);
     const navigate = useNavigate();
     const [product, setProduct] = useState({
         name: '',
@@ -68,11 +70,19 @@ const Stock = () => {
         setShowDeleteProductModal(false);
     }
 
+    const openMostSoldDronesModal = () => {
+        setShowMostSoldDronesModal(true);
+    }
+
+    const closeMostSoldDronesModal = () => {
+        setShowMostSoldDronesModal(false);
+    }
+
     return (
         <div className='text-white p-4 mt-5'>
             <div className='d-flex justify-content-between mb-2'>
                 <h2>Administrar Productos</h2>
-                <Button variant='success' size='sm'>Drones más vendidos</Button>
+                <Button variant='success' size='sm' onClick={openMostSoldDronesModal}>Drones más vendidos</Button>
             </div>
             <Table striped bordered hover variant='dark'>
                 <thead>
@@ -130,6 +140,11 @@ const Stock = () => {
                 handleClose={closeDeleteModal}
                 product={productToDelete}
                 reloadProducts={getProducts}
+            />
+
+            <MostSoldDronesModal
+                show={showMostSoldDronesModal}
+                handleHide={closeMostSoldDronesModal}
             />
         </div>
     );

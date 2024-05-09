@@ -1,0 +1,9 @@
+.login-banner{
+    height: 700px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("./images/drone.jpg");
+    background-size: cover;
+    background-position: center;
+
+}

@@ -41,17 +41,33 @@ export const  DELETE_CLIENT = gql `
 `;
 
 export const ADD_CLIENT = gql`
-mutation NewClient($input: inputClient) {
-  newClient(input: $input) {
-    id
-    name
-    lastName
-    company
-    phoneNumber
-    email
-    password
-    created
-    seller
-  }
-}
+    mutation NewClient($input: inputClient) {
+      newClient(input: $input) {
+        id
+        name
+        lastName
+        company
+        phoneNumber
+        email
+        password
+        created
+        seller
+      }
+    }
 `;
+
+export const GET_REPORT_BEST_CLIENTS = gql`
+    query GetBestClientBySeller($getBestClientBySellerId: ID) {
+      getBestClientBySeller(id: $getBestClientBySellerId) {
+        id
+        name
+        lastName
+        company
+        phoneNumber
+        email
+        password
+        created
+        seller
+      }
+    }
+    `;

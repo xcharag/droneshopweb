@@ -1,0 +1,19 @@
+.remove-btn{
+    margin-left: 10px;
+}
+
+.cart-container {
+    margin-top: 20px;
+}
+
+.remove-btn {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+/* Adjusting size of cart item image */
+.cart-item-image {
+    max-width: 200px; /* Adjust the max-width as needed */
+    height: auto;
+}

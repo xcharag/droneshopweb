@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {useMutation, useLazyQuery} from '@apollo/client';
-import {GET_SELLER_QUERY, LOGIN_MUTATION} from './queries/queries.js';
-import Header from "../header/header.jsx";
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { GET_SELLER_QUERY, LOGIN_MUTATION } from './queries/queries.js';
+import { Button } from "react-bootstrap";
+import '../login/login.css';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -46,7 +46,6 @@ const Login = () => {
             localStorage.setItem('seller', JSON.stringify(userData.data.getSeller));
             localStorage.setItem('token', token);
 
-            // Redireccionar a la página deseada
             navigate('/admClient');
 
         } catch (error) {
@@ -61,9 +60,9 @@ const Login = () => {
     };
 
     return (
+        <section className="login-banner">
         <div className="login d-flex justify-content-center align-items-center vh-100">
-            <Header/>
-            <div className='p-5 bg-light rounded'>
+            <div className='p-5 bg-light rounded opacity-75'>
                 <form id='form-login' onSubmit={handleSubmit}>
                     <h3 className="mb-4"> Login </h3>
                     {authError && <div className="alert alert-danger">{authError}</div>}
@@ -92,13 +91,14 @@ const Login = () => {
                         />
                         {passwordError && <div className="alert alert-danger mt-2">{passwordError}</div>}
                     </div>
-
-                    <button type="submit" className="btn btn-primary w-100">
-                        Login
-                    </button>
+                    <div className="mb-3">
+                    <Button type="submit" className="m-2" variant="outline-primary">Iniciar Sesión </Button>
+                    <Link to='/signUp' className="btn btn-outline-secondary">Registrarse como vendedor</Link>
+                    </div>
                 </form>
             </div>
         </div>
+    </section>
     );
 };
 

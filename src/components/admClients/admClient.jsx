@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Table, Form } from 'react-bootstrap';
-import {useQuery, useMutation, useLazyQuery} from '@apollo/client';
-import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT } from './queries/queries.js'; // Asegúrate de importar tus consultas GraphQL
+import {useMutation, useLazyQuery} from '@apollo/client';
+import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT, GET_REPORT_BEST_CLIENTS } from './queries/queries.js'; // Asegúrate de importar tus consultas GraphQL
 
 const AdmClient = () => {
     const [clients, setClients] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showBestClientModal,setShowBestClientModal] = useState(false);
 
     const [clientToEdit, setClientToEdit] = useState(null);
     const [clientToDelete, setClientToDelete] = useState(null);
     const [clientToAdd, setClientToAdd] = useState(null);
-    const [client, setClient] = useState({
+    const [client] = useState({
+        name: '',
+        lastName: '',
+        company: '',
+        phoneNumber: '',
+        email: '',
+        password: ''
+    });
+    const [bestClient, setBestClient] = useState({
         name: '',
         lastName: '',
         company: '',
@@ -26,6 +35,7 @@ const AdmClient = () => {
     const [deleteClient] = useMutation(DELETE_CLIENT);
     const [addClient] = useMutation(ADD_CLIENT);
     const [getClientsBySeller] = useLazyQuery(GET_CLIENTS_BY_SELLER);
+    const [getBestClient] = useLazyQuery(GET_REPORT_BEST_CLIENTS);
 
     useEffect(() => {
         getClients(); // Para ejecutar la consulta al montar el componente y cuando haya cambios
@@ -54,12 +64,21 @@ const AdmClient = () => {
     }
 
 
+    const handleEditClick = (client) => {
+        console.log("Edit button clicked", client);
+        setClientToEdit(client);
+        setShowEditModal(true);
+    };
+
+    const handleEditModalClose = () => {
+        setShowEditModal(false);
+    };
+
+
     const handleEditClient = async () => {
         try {
-            console.log(clientToEdit.id);
-
             const seller = JSON.parse(localStorage.getItem('seller'));
-            const { responseData } = await updateClient({
+            await updateClient({
 
                 variables: {
                     clientUpdateId: clientToEdit.id,
@@ -80,16 +99,23 @@ const AdmClient = () => {
                 }
             });
             setShowEditModal(false);
-            getClients();
+            await getClients();
         } catch (error) {
             console.error('Error al cambiar datos del cliente', error);
         }
     };
 
+    const handleDeleteClick = (client) => {
+        setClientToDelete(client);
+        setShowDeleteModal(true);
+    };
+    const handleDeleteModalClose = () => {
+        setShowDeleteModal(false);
+    };
     const handleDeleteConfirm = async () => {
         try {
 
-            const { responseData } = await deleteClient({
+           await deleteClient({
                 variables: {
                     deleteClientId: clientToDelete.id
                 },
@@ -104,6 +130,20 @@ const AdmClient = () => {
         } catch (error) {
             console.error('Error al eliminar el cliente:', error);
         }
+    };
+
+    const handleAddClick = () => {
+        console.log("Add button clicked", client);
+        setShowAddModal(true);
+        setClientToAdd(client);
+    };
+    const handleAddModalClose = () => {
+        setShowAddModal(false);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await handleAddClient();
     };
 
     const handleAddClient = async () => {
@@ -134,47 +174,41 @@ const AdmClient = () => {
         }
     };
 
-    const handleEditClick = (client) => {
-        console.log("Edit button clicked", client);
-        setClientToEdit(client);
-        setShowEditModal(true);
-    };
+    const getBestClientModalClose = () => {
+        setShowBestClientModal(false);
+    }
 
-    const handleDeleteClick = (client) => {
-        setClientToDelete(client);
-        setShowDeleteModal(true);
-    };
 
-    const handleAddClick = () => {
-        console.log("Add button clicked", client);
-        setShowAddModal(true);
-        setClientToAdd(client);
-    };
+    const getReportBestClient = async () => {
+        try {
+            const seller = JSON.parse(localStorage.getItem('seller'));
+            const responseData = await getBestClient({
+                variables: {
+                    getBestClientBySellerId: seller.id
+                },
+                context: {
+                    headers: {
+                        Authorization: localStorage.getItem('token')
+                    }
+                }
+            });
+            console.log(responseData);
+            setBestClient(responseData.data.getBestClientBySeller);
 
-    const handleEditModalClose = () => {
-        setShowEditModal(false);
+        } catch (error) {
+            console.error('Error al obtener el mejor cliente:', error);
+        }
+        setShowBestClientModal(true);
     };
-
-    const handleDeleteModalClose = () => {
-        setShowDeleteModal(false);
-    };
-
-    const handleAddModalClose = () => {
-        setShowAddModal(false);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        await handleAddClient();
-    };
-
-    
 
     return (
 
         <div className="text-white p-4 mt-5">
             <div className="d-flex justify-content-between mb-3">
                 <h2>Administrar Clientes</h2>
+                <Button variant='success' onClick={getReportBestClient}>
+                    Ver información mejor cliente
+                </Button>
             </div>
 
             <Table striped bordered hover variant="dark">
@@ -299,7 +333,7 @@ const AdmClient = () => {
                         Eliminar
                     </Button>
                 </Modal.Footer>
-                </Modal>
+            </Modal>
 
 
             <Modal show={showAddModal} onHide={handleAddModalClose}>
@@ -368,14 +402,86 @@ const AdmClient = () => {
                                 onChange={(e) => setClientToAdd({ ...clientToAdd, password: e.target.value })}
                             />
                         </Form.Group>
+                        <div className='buttonsModal mt-2'>
                         <Button variant="secondary" onClick={handleAddModalClose}>
                             Cerrar
                         </Button>
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" type="submit" className='m-2'>
                             Agregar
                         </Button>
+                        </div>
                     </Form>
                 </Modal.Body>
+            </Modal>
+
+
+            <Modal show={showBestClientModal} onHide={getBestClientModalClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Mejor Cliente</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+
+                    <Form>
+                        <Form.Group controlId="formName">
+                            <Form.Label>Nombre</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={bestClient ? bestClient.name : ''}
+                                placeholder= "Nombre:"
+                            />
+                        </Form.Group>
+                    </Form>
+
+                    <Form>
+                        <Form.Group controlId="formLastName">
+                            <Form.Label>Apellido</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={bestClient ? bestClient.lastName : ''}
+                                placeholder= "Apellido:"
+                            />
+                        </Form.Group>
+                    </Form>
+
+                    <Form>
+                        <Form.Group controlId="formCompany">
+                            <Form.Label>Empresa</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={bestClient ? bestClient.company : ''}
+                                placeholder= "Empresa:"
+                            />
+                        </Form.Group>
+                    </Form>
+
+                    <Form>
+                        <Form.Group controlId="formPhoneNumber">
+                            <Form.Label>Teléfono</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={bestClient ? bestClient.phoneNumber : ''}
+                                placeholder= "Teléfono:"
+                            />
+                        </Form.Group>
+                    </Form>
+
+                    <Form>
+                        <Form.Group controlId="formEmail">
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control
+                                type="email"
+                                value={bestClient ? bestClient.email : ''}
+                                placeholder= "Email:"
+                            />
+                        </Form.Group>
+                    </Form>
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={getBestClientModalClose}>
+                        Cerrar
+                    </Button>
+                </Modal.Footer>
             </Modal>
 
         </div>

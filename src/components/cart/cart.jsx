@@ -3,7 +3,8 @@ import { Container, Row, Col, ListGroup, Button, Form } from 'react-bootstrap';
 import { BsTrash } from 'react-icons/bs';
 import CreditCardForm from './components/creditcardmethod.jsx';
 import QRPayForm from './components/qrmethod.jsx';
-import './cart.css'; // Importing CSS for styling
+import './cart.css';
+import Header from "../header/header.jsx"; // Importing CSS for styling
 
 const Cart = () => {
     const [paymentMethod, setPaymentMethod] = useState('creditCard');
@@ -16,6 +17,7 @@ const Cart = () => {
 
     return (
         <Container className="cart-container">
+            <Header />
             <Row>
                 <Col>
                     <h2 className="text-success fw-bold">Tu Carrito</h2>

@@ -1,4 +1,3 @@
-// ProductPage.js
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useLazyQuery } from "@apollo/client";
@@ -9,7 +8,7 @@ import Header from "../header/header.jsx";
 
 const ProductPage = () => {
     const [products, setProducts] = useState([]);
-    const [getProducts, { loading, data }] = useLazyQuery(GET_PRODUCTS_QUERY);
+    const [getProducts, {data}] = useLazyQuery(GET_PRODUCTS_QUERY);
 
     useEffect(() => {
         getProducts();
@@ -17,6 +16,7 @@ const ProductPage = () => {
 
     useEffect(() => {
         if (data) {
+            console.log(data);
             setProducts(data.getAllProducts);
         }
     }, [data]);
@@ -53,7 +53,7 @@ const ProductPage = () => {
             <div className="round-corner-square">
                 {products.map((product, index) => (
                     <Card key={index}>
-                        <Card.Img variant="top" src={`src/assets/products-img/dron-${index + 1}.jpg`} />
+                        <Card.Img variant="top" src={product.image.toString()}/>
                         <Card.Body>
                             <Card.Title>{product.name}</Card.Title>
                             <Card.Text>{product.specifications}</Card.Text>

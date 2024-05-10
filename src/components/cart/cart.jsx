@@ -42,12 +42,24 @@ const Cart = () => {
 
     const handleSubmit = async () => {
         try {
+            const client = JSON.parse(localStorage.getItem('client')); // Retrieve client ID from localStorage
+
+            // Prepare the order input object with required parameters
+            const orderInput = {
+                client: client.id,
+                order: groupedCartItems.map(item => ({ id: item.id, quantity: item.quantity })),
+                status: 'PENDIENTE'
+            };
+            console.log('orderInput:', orderInput);
             // Execute the add_order mutation
             await addOrder({
                 variables: {
-                    // Pass the cart items or relevant data to the mutation
-                    cart: cartItems.flatMap(item => Array.from({ length: item.quantity }, () => ({ productId: item.id, quantity: 1 }))),
-                    paymentMethod
+                    input: orderInput
+                },
+                context: {
+                    headers: {
+                        Authorization: localStorage.getItem('token')
+                    }
                 }
             });
 

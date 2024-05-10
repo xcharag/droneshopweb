@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useLazyQuery } from '@apollo/client';
-import { GET_CLIENT_QUERY, GET_SELLER_QUERY, LOGIN_CLIENT_MUTATION, LOGIN_MUTATION } from './queries/queries.js';
+import { GET_CLIENT_QUERY, GET_SELLER_QUERY, LOGIN_CLIENT_MUTATION, LOGIN_MUTATION } from './gql/queries.js';
 import { Button } from "react-bootstrap";
-import '../login/login.css';
+import './login.css';
 import Header from "../header/header.jsx";
 
 const Login = () => {
@@ -42,7 +42,6 @@ const Login = () => {
         }
 
         try {
-            // Attempt seller login
             const { data } = await loginMutation({ variables: { email, password } });
             const token = data.authSellerLogin.token;
             const userData = await getSellerQuery({ variables: { token } });

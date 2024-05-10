@@ -41,7 +41,7 @@ const DeleteProductModal = ({show, handleClose, product, reloadProducts}) => {
             </ModalHeader>
 
             <ModalBody>
-                <p>¿Estás seguro de que quieres eliminar este cliente?</p>
+                <p>¿Estás seguro de que quieres eliminar este producto?</p>
             </ModalBody>
 
             <ModalFooter>

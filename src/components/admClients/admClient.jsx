@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Table, Form } from 'react-bootstrap';
+import {Button, Modal, Table, Form, ListGroup} from 'react-bootstrap';
 import {useMutation, useLazyQuery} from '@apollo/client';
-import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT, GET_REPORT_BEST_CLIENTS } from './gql/queries.js'; // Asegúrate de importar tus consultas GraphQL
+import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT, GET_REPORT_BEST_CLIENTS } from './gql/queries.js';
 
 const AdmClient = () => {
     const [clients, setClients] = useState([]);
@@ -202,7 +202,6 @@ const AdmClient = () => {
     };
 
     return (
-
         <div className="text-white p-4 mt-5">
             <div className="d-flex justify-content-between mb-3">
                 <h2>Administrar Clientes</h2>
@@ -420,62 +419,11 @@ const AdmClient = () => {
                     <Modal.Title>Mejor Cliente</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-
-                    <Form>
-                        <Form.Group controlId="formName">
-                            <Form.Label>Nombre</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={bestClient ? bestClient.name : ''}
-                                placeholder= "Nombre:"
-                            />
-                        </Form.Group>
-                    </Form>
-
-                    <Form>
-                        <Form.Group controlId="formLastName">
-                            <Form.Label>Apellido</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={bestClient ? bestClient.lastName : ''}
-                                placeholder= "Apellido:"
-                            />
-                        </Form.Group>
-                    </Form>
-
-                    <Form>
-                        <Form.Group controlId="formCompany">
-                            <Form.Label>Empresa</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={bestClient ? bestClient.company : ''}
-                                placeholder= "Empresa:"
-                            />
-                        </Form.Group>
-                    </Form>
-
-                    <Form>
-                        <Form.Group controlId="formPhoneNumber">
-                            <Form.Label>Teléfono</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={bestClient ? bestClient.phoneNumber : ''}
-                                placeholder= "Teléfono:"
-                            />
-                        </Form.Group>
-                    </Form>
-
-                    <Form>
-                        <Form.Group controlId="formEmail">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                value={bestClient ? bestClient.email : ''}
-                                placeholder= "Email:"
-                            />
-                        </Form.Group>
-                    </Form>
-
+                      <ListGroup.Item><strong>Nombre:</strong> {bestClient.name}</ListGroup.Item>
+                    <ListGroup.Item><strong>Apellido:</strong> {bestClient.lastName}</ListGroup.Item>
+                    <ListGroup.Item><strong>Empresa:</strong> {bestClient.company}</ListGroup.Item>
+                    <ListGroup.Item><strong>Teléfono:</strong> {bestClient.phoneNumber}</ListGroup.Item>
+                    <ListGroup.Item><strong>Email:</strong> {bestClient.email}</ListGroup.Item>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={getBestClientModalClose}>
@@ -483,7 +431,6 @@ const AdmClient = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
         </div>
 
     );

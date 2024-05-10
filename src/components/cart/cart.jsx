@@ -79,7 +79,8 @@ const Cart = () => {
 
     return (
         <Container className="cart-container">
-            <Header />
+            <div>
+                <Header />
             <Row>
                 <Col>
                     <h2 className="text-success fw-bold">Tu Carrito</h2>
@@ -129,6 +130,8 @@ const Cart = () => {
                     </Form>
                 </Col>
             </Row>
+                <Header />
+            </div>
         </Container>
     );
 

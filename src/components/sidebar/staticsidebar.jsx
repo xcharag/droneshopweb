@@ -1,13 +1,9 @@
 import React from 'react';
 import {Button, Nav, Navbar} from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function staticSidebar() {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const navigate = useNavigate();
-    const handleGoBack = () => {
-        navigate(-1); // -1 para ir a la página anterior
-    };
+
     return (
         <div style={{
             width: '200px',
@@ -33,9 +29,6 @@ function staticSidebar() {
                         <Button as={Link} to="/" variant="secondary" size= "sm" className="mb-2">Inicio</Button>
                         <Button as={Link} to="/admClient" variant="secondary" size= "sm" block>Administrar Clientes</Button>
                         <Button as={Link} to="/stock" variant="secondary" size= "sm" block>Administrar Productos</Button>
-                        <Button variant="outline-light" size="sm" onClick={handleGoBack} style={{marginTop: '130px'}}>
-                        Volver atrás
-                        </Button>
                     </div>
                 </div>
             </Nav>

@@ -2,6 +2,6 @@
 .navbar .nav-link.active,
 .navbar .nav-link.active:hover,
 .navbar .nav-link.active:focus {
-    color: #155724; /* Bootstrap "success" color */
+    color: #155724;
 }
 

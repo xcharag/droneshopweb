@@ -79,7 +79,7 @@ const Stock = () => {
     }
 
     return (
-        <div className='text-white p-4 mt-5'>
+        <div className='text-white p-4 mt-5 m-5'>
             <div className='d-flex justify-content-between mb-2'>
                 <h2>Administrar Productos</h2>
                 <Button variant='success' size='sm' onClick={openMostSoldDronesModal}>Drones más vendidos</Button>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation} from '@apollo/client';
-import { ADD_SELLER} from './queries/queries.js';
+import { ADD_SELLER} from './gql/queries.js';
 import { Button } from "react-bootstrap";
 import '../login/login.css';
 import Header from "../header/header.jsx";

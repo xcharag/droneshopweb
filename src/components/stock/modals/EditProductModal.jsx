@@ -3,6 +3,7 @@ import {Button, Form, Modal, ModalBody, ModalHeader} from "react-bootstrap";
 import {useMutation} from "@apollo/client";
 import {UPDATE_PRODUCT} from "../gql/mutations.js";
 
+// eslint-disable-next-line react/prop-types
 const EditProductModal = ({show, handleClose, productData, reloadProducts}) => {
     const [editedProduct, setEditedProduct] = useState(null);
     const [updateProduct, {loading, error}] = useMutation(UPDATE_PRODUCT);

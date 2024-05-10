@@ -1,20 +1,27 @@
 import React from "react";
 import "./header.css";
-import { Button, Container, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Nav, Navbar, Badge } from "react-bootstrap";
 import { useLocation, Link } from "react-router-dom";
 import { FaHome, FaShoppingCart } from "react-icons/fa";
 import { PiDrone } from "react-icons/pi";
+import { RiAdminFill } from "react-icons/ri";
 
 const Header = () => {
     const location = useLocation();
     const isLoggedIn = localStorage.getItem("token") !== null;
+    const isSeller = localStorage.getItem("seller") !== "false";
+
+    // Get cart items from sessionStorage
+    const cartItems = JSON.parse(sessionStorage.getItem("cart")) || [];
+    const cartItemCount = cartItems.length;
 
     const isActive = (path) => {
         return location.pathname === path;
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("seller");
+        localStorage.setItem("seller", "false")
+        localStorage.removeItem("client");
         localStorage.removeItem("token");
         window.location.reload();
     };
@@ -36,9 +43,16 @@ const Header = () => {
                             <PiDrone className="me-1" />
                             Productos
                         </Nav.Link>
+                        {isSeller && ( // Conditionally render "Administración" nav link for sellers
+                            <Nav.Link as={Link} to="/admClient" active={isActive("/admClient")}>
+                                <RiAdminFill className="me-1"/>
+                                Administración
+                            </Nav.Link>
+                        )}
                         <Nav.Link as={Link} to="/cart" disabled={!isLoggedIn} active={isActive("/cart")}>
                             <FaShoppingCart className="me-1" />
                             Carrito
+                            {cartItemCount > 0 && <Badge bg="secondary">{cartItemCount}</Badge>}
                         </Nav.Link>
                     </Nav>
                     <Nav className="ms-3">

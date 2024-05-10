@@ -19,3 +19,27 @@ export const GET_SELLER_QUERY = gql`
     }
   }
 `;
+
+export const LOGIN_CLIENT_MUTATION = gql`
+    mutation AuthClientLogin($input: clientAuthentication) {
+      authClientLogin(input: $input) {
+        token
+      }
+    }
+`;
+
+export const GET_CLIENT_QUERY = gql`
+    query Query($token: String) {
+      getClient(token: $token) {
+        id
+        name
+        lastName
+        company
+        phoneNumber
+        email
+        password
+        created
+        seller
+      }
+    }
+`;

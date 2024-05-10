@@ -17,3 +17,15 @@
     max-width: 200px; /* Adjust the max-width as needed */
     height: auto;
 }
+
+.cart-items-container {
+    max-height: 400px; /* Set the maximum height for the container */
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds container height */
+}
+
+.empty-cart-message {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+

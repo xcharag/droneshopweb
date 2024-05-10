@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Card, Container } from "react-bootstrap";
 import { GET_PRODUCTS_QUERY } from "./queries/queries.js";
 import { useLazyQuery } from "@apollo/client";
+import Header from "../header/header.jsx";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Home = () => {
 
     return (
         <div className="home">
+            <Header />
             <section className="home-banner drone-scroll-animation">
                 {/* Banner Content */}
             </section>

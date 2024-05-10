@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./home.css";
 import { useNavigate } from "react-router-dom";
-import {Button, Card, Col, Container, Row} from "react-bootstrap";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import { GET_PRODUCTS_QUERY } from "./queries/queries.js";
 import { useLazyQuery } from "@apollo/client";
-import {TbDrone} from "react-icons/tb";
-import {FaCamera, FaEnvelope} from "react-icons/fa";
-import Header from "../header/header.jsx";
+import { TbDrone } from "react-icons/tb";
+import { FaCamera, FaEnvelope } from "react-icons/fa";
 
 const Home = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
 
     // UseLazyQuery to fetch products
-    const [getProducts, { loading, data }] = useLazyQuery(GET_PRODUCTS_QUERY);
+    const [getProducts, { data }] = useLazyQuery(GET_PRODUCTS_QUERY);
 
     // Fetch products when component mounts
     useEffect(() => {
@@ -23,7 +22,11 @@ const Home = () => {
     // Update state with fetched products
     useEffect(() => {
         if (data) {
-            setProducts(data.getAllProducts);
+            const fetchedProducts = [...data.getAllProducts]; // Create a copy of the fetched products array
+            const randomProducts = fetchedProducts
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 6); // Randomize and select 6 products
+            setProducts(randomProducts);
         }
     }, [data]);
 
@@ -33,12 +36,15 @@ const Home = () => {
 
     return (
         <div className="home">
-            <Header />
             <section className="home-banner drone-scroll-animation">
                 <div className="home-banner-content">
                     <h1 className="text-success">AirPixel</h1>
-                    <p className="text-white">Lleva el la altura de tus fotos al siguiente nivel</p>
-                    <Button onClick={handleClickProducts} variant="success">Ver Productos</Button>
+                    <p className="text-white">
+                        Lleva el la altura de tus fotos al siguiente nivel
+                    </p>
+                    <Button onClick={handleClickProducts} variant="success">
+                        Ver Productos
+                    </Button>
                 </div>
             </section>
 
@@ -48,14 +54,13 @@ const Home = () => {
                     <div className="round-corner-square">
                         {products.map((product, index) => (
                             <Card key={index}>
-                                <Card.Img variant="top" src={`src/assets/products-img/dron-${index + 1}.jpg`} />
+                                <Card.Img variant="top" src={"/" + product.image.toString()} />
                                 <Card.Body>
                                     <Card.Title>{product.name}</Card.Title>
                                     <Card.Text>{product.specifications}</Card.Text>
                                     <div className="position-absolute top-0 start-0 mt-2 ms-2">
                                         <span className="badge bg-success badge-pill" style={{ fontSize: "1.25rem" }}>Precio: ${product.price}</span>
                                     </div>
-                                    <Button variant="success">Agregar al Carrito</Button>
                                 </Card.Body>
                             </Card>
                         ))}
@@ -74,7 +79,7 @@ const Home = () => {
                     <Row className="justify-content-center">
                         <Col md={4} className="text-center">
                             <div className="about-icon">
-                                <TbDrone size={50} className="text-success mb-3"/>
+                                <TbDrone size={50} className="text-success mb-3" />
                             </div>
                             <h3 className="text-white mb-3">Productos de Calidad</h3>
                             <p className="text-white">
@@ -83,7 +88,7 @@ const Home = () => {
                         </Col>
                         <Col md={4} className="text-center">
                             <div className="about-icon">
-                                <FaCamera size={50} className="text-success mb-3"/>
+                                <FaCamera size={50} className="text-success mb-3" />
                             </div>
                             <h3 className="text-white mb-3">Captura Increíble</h3>
                             <p className="text-white">
@@ -92,7 +97,7 @@ const Home = () => {
                         </Col>
                         <Col md={4} className="text-center">
                             <div className="about-icon">
-                                <FaEnvelope size={50} className="text-success mb-3"/>
+                                <FaEnvelope size={50} className="text-success mb-3" />
                             </div>
                             <h3 className="text-white mb-3">Contáctanos</h3>
                             <p className="text-white">

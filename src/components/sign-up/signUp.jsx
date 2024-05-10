@@ -68,7 +68,6 @@ const SignUp = () => {
 
     return (
         <section className="login-banner">
-            <Header />
         <div className="login d-flex justify-content-center align-items-center vh-100">
             <div className='p-5 bg-light rounded opacity-75'>
                 <form id='form-sign-up' onSubmit={handleAddSeller}>

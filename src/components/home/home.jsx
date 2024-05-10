@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./home.css";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Container } from "react-bootstrap";
+import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import { GET_PRODUCTS_QUERY } from "./queries/queries.js";
 import { useLazyQuery } from "@apollo/client";
+import {TbDrone} from "react-icons/tb";
+import {FaCamera, FaEnvelope} from "react-icons/fa";
 import Header from "../header/header.jsx";
 
 const Home = () => {
@@ -33,7 +35,11 @@ const Home = () => {
         <div className="home">
             <Header />
             <section className="home-banner drone-scroll-animation">
-                {/* Banner Content */}
+                <div className="home-banner-content">
+                    <h1 className="text-success">AirPixel</h1>
+                    <p className="text-white">Lleva el la altura de tus fotos al siguiente nivel</p>
+                    <Button onClick={handleClickProducts} variant="success">Ver Productos</Button>
+                </div>
             </section>
 
             <section className="home-topproducts">
@@ -63,7 +69,39 @@ const Home = () => {
             </section>
 
             <section className="home-about">
-                {/* About Section */}
+                <Container>
+                    <h2 className="text-center title-about text-success fw-bold mb-4">Sobre Nosotros</h2>
+                    <Row className="justify-content-center">
+                        <Col md={4} className="text-center">
+                            <div className="about-icon">
+                                <TbDrone size={50} className="text-success mb-3"/>
+                            </div>
+                            <h3 className="text-white mb-3">Productos de Calidad</h3>
+                            <p className="text-white">
+                                Ofrecemos drones de alta calidad diseñados para fotografía aérea y videografía.
+                            </p>
+                        </Col>
+                        <Col md={4} className="text-center">
+                            <div className="about-icon">
+                                <FaCamera size={50} className="text-success mb-3"/>
+                            </div>
+                            <h3 className="text-white mb-3">Captura Increíble</h3>
+                            <p className="text-white">
+                                Descubre nuevas perspectivas y captura imágenes impresionantes desde el aire.
+                            </p>
+                        </Col>
+                        <Col md={4} className="text-center">
+                            <div className="about-icon">
+                                <FaEnvelope size={50} className="text-success mb-3"/>
+                            </div>
+                            <h3 className="text-white mb-3">Contáctanos</h3>
+                            <p className="text-white">
+                                ¿Tienes alguna pregunta? ¡Estamos aquí para ayudarte! Contáctanos para obtener más
+                                información.
+                            </p>
+                        </Col>
+                    </Row>
+                </Container>
             </section>
         </div>
     );

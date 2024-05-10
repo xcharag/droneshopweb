@@ -10,6 +10,7 @@ export const GET_PRODUCTS_QUERY = gql`
         created
         model
         specifications
+        image
       }
     }
 `;

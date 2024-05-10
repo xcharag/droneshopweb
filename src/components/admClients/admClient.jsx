@@ -30,7 +30,6 @@ const AdmClient = () => {
         password: ''
     });
 
-
     const [updateClient] = useMutation(UPDATE_CLIENT);
     const [deleteClient] = useMutation(DELETE_CLIENT);
     const [addClient] = useMutation(ADD_CLIENT);

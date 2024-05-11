@@ -5,11 +5,13 @@ import { useLocation, Link } from "react-router-dom";
 import { FaHome, FaShoppingCart } from "react-icons/fa";
 import { PiDrone } from "react-icons/pi";
 import { RiAdminFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
     const location = useLocation();
     const isLoggedIn = localStorage.getItem("token") !== null;
     const isSeller = localStorage.getItem("seller") !== "false";
+    const navigate = useNavigate();
 
     // Get cart items from sessionStorage
     const cartItems = JSON.parse(sessionStorage.getItem("cart")) || [];
@@ -23,7 +25,7 @@ const Header = () => {
         localStorage.setItem("seller", "false")
         localStorage.removeItem("client");
         localStorage.removeItem("token");
-        window.location.reload();
+        navigate("/");
     };
 
     return (

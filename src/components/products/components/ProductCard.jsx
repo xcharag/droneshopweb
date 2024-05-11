@@ -4,7 +4,7 @@ import { Card, Button } from "react-bootstrap";
 const ProductCard = ({ product, handleAddToCart, isLoggedIn }) => {
     return (
         <Card>
-            <Card.Img variant="top" src={product.image.toString()} />
+            <Card.Img variant="top" src="" />
             <Card.Body>
                 <Card.Title>{product.name} - {product.model}</Card.Title>
                 <Card.Text>{product.specifications}</Card.Text>

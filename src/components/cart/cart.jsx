@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {Container, Row, Col, ListGroup, Button, Form, Alert} from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Button, Form, Alert, Modal } from 'react-bootstrap'; // Import Modal from react-bootstrap
 import { BsTrash } from 'react-icons/bs';
 import CreditCardForm from './components/creditcardmethod.jsx';
 import QRPayForm from './components/qrmethod.jsx';
 import './cart.css';
 import Header from "../header/header.jsx";
-import TotalPriceSquare from "./components/totalPrice.jsx"; // Import TotalPriceSquare component
+import TotalPriceSquare from "./components/totalPrice.jsx";
 import { useMutation } from '@apollo/client';
 import { ADD_ORDER_MUTATION } from './queries/queries.js';
 
 const Cart = () => {
     const [paymentMethod, setPaymentMethod] = useState('creditCard');
     const [cartItems, setCartItems] = useState([]);
+    const [showModal, setShowModal] = useState(false); // State variable for controlling modal visibility
 
     // Mutation hook for executing the add_order mutation
     const [addOrder] = useMutation(ADD_ORDER_MUTATION);
@@ -39,7 +40,6 @@ const Cart = () => {
         sessionStorage.setItem('cart', JSON.stringify(updatedCart));
     };
 
-
     const handleSubmit = async () => {
         try {
             const client = JSON.parse(localStorage.getItem('client')); // Retrieve client ID from localStorage
@@ -50,7 +50,7 @@ const Cart = () => {
                 order: groupedCartItems.map(item => ({ id: item.id, quantity: item.quantity })),
                 status: 'PENDIENTE'
             };
-            console.log('orderInput:', orderInput);
+
             // Execute the add_order mutation
             await addOrder({
                 variables: {
@@ -67,8 +67,8 @@ const Cart = () => {
             setCartItems([]);
             sessionStorage.removeItem('cart');
 
-            // Optionally, display a success message or navigate to a confirmation page
-            console.log('Order placed successfully!');
+            // Show the modal after successful submission
+            setShowModal(true);
         } catch (error) {
             console.error('Error placing order:', error);
             // Optionally, display an error message to the user
@@ -93,62 +93,68 @@ const Cart = () => {
         <Container className="cart-container">
             <div>
                 <Header />
-            <Row>
-                <Col>
-                    <h2 className="text-success fw-bold">Tu Carrito</h2>
-                    {groupedCartItems.length === 0 ? (
-                        <div className="empty-cart-message">
-                            <Alert variant="danger" className="rounded p-4 text-center">
-                                <h4 className="mb-0">Carrito Vacío</h4>
-                            </Alert>
-                        </div>
-                    ) : (
-                        <div className="cart-items-container">
-                            <ListGroup>
-                                {groupedCartItems.map((item) => (
-                                    <ListGroup.Item key={item.id}>
-                                        <Row>
-                                            <Col>
-                                                <img src={item.image} alt={item.name} className="cart-item-image" />
-                                            </Col>
-                                            <Col className="d-flex align-items-center justify-content-center">
-                                                <div>
-                                                    <h4>{item.name}</h4>
-                                                    <p>{item.price}</p>
-                                                    <Button variant="danger" onClick={() => handleRemoveItem(item.id)}>
-                                                        <BsTrash /> Remove
-                                                    </Button>
-                                                    <p>Quantity: {item.quantity}</p>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
-                                ))}
-                            </ListGroup>
-                        </div>
-                    )}
-                </Col>
+                <Row>
+                    <Col>
+                        <h2 className="text-success fw-bold">Tu Carrito</h2>
+                        {groupedCartItems.length === 0 ? (
+                            <div className="empty-cart-message">
+                                <Alert variant="danger" className="rounded p-4 text-center">
+                                    <h4 className="mb-0">Carrito Vacío</h4>
+                                </Alert>
+                            </div>
+                        ) : (
+                            <div className="cart-items-container">
+                                <ListGroup>
+                                    {groupedCartItems.map((item) => (
+                                        <ListGroup.Item key={item.id}>
+                                            <Row>
+                                                <Col className="d-flex align-items-center justify-content-center">
+                                                    <div>
+                                                        <h4>{item.name}</h4>
+                                                        <p>{item.price}</p>
+                                                        <Button variant="danger" onClick={() => handleRemoveItem(item.id)}>
+                                                            <BsTrash /> Remove
+                                                        </Button>
+                                                        <p>Quantity: {item.quantity}</p>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </ListGroup.Item>
+                                    ))}
+                                </ListGroup>
+                            </div>
+                        )}
+                    </Col>
 
-                <Col>
-                    <h2 className="text-white fw-bold">Metodo de Pago</h2>
-                    <Form>
-                        <Form.Select onChange={(e) => setPaymentMethod(e.target.value)}>
-                            <option value="creditCard">Tarjeta de Credito/Debito</option>
-                            <option value="qrPay">Pago QR</option>
-                        </Form.Select>
-                        {paymentMethod === 'creditCard' ? <CreditCardForm /> : <QRPayForm />}
-                        <TotalPriceSquare totalPrice={totalPrice} />
-                        <Button variant="primary" onClick={handleSubmit}>Submit</Button>
-                    </Form>
-                </Col>
-            </Row>
+                    <Col>
+                        <h2 className="text-white fw-bold">Metodo de Pago</h2>
+                        <Form>
+                            <Form.Select onChange={(e) => setPaymentMethod(e.target.value)}>
+                                <option value="creditCard">Tarjeta de Credito/Debito</option>
+                                <option value="qrPay">Pago QR</option>
+                            </Form.Select>
+                            {paymentMethod === 'creditCard' ? <CreditCardForm /> : <QRPayForm />}
+                            <TotalPriceSquare totalPrice={totalPrice} />
+                            <Button variant="primary" onClick={handleSubmit} className="btn-success">Confirmar Orden</Button>
+                        </Form>
+                    </Col>
+                </Row>
                 <Header />
+                {/* Modal for showing successful purchase */}
+                <Modal show={showModal} onHide={() => setShowModal(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Compra Exitosa</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Tu compra fue exitosa.</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={() => setShowModal(false)}>
+                            Cerrar
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         </Container>
     );
-
-
 };
 
 export default Cart;
-

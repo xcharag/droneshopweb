@@ -54,7 +54,7 @@ const Home = () => {
                     <div className="round-corner-square">
                         {products.map((product, index) => (
                             <Card key={index}>
-                                <Card.Img variant="top" src={"/" + product.image.toString()} />
+                                <Card.Img variant="top" src="" />
                                 <Card.Body>
                                     <Card.Title>{product.name}</Card.Title>
                                     <Card.Text>{product.specifications}</Card.Text>

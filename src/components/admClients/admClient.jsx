@@ -35,6 +35,7 @@ const AdmClient = () => {
     const [addClient] = useMutation(ADD_CLIENT);
     const [getClientsBySeller] = useLazyQuery(GET_CLIENTS_BY_SELLER);
     const [getBestClient] = useLazyQuery(GET_REPORT_BEST_CLIENTS);
+    const [topBestClients, setTopBestClients] = useState([]);
 
     useEffect(() => {
         getClients(); // Para ejecutar la consulta al montar el componente y cuando haya cambios
@@ -183,7 +184,7 @@ const AdmClient = () => {
             const seller = JSON.parse(localStorage.getItem('seller'));
             const responseData = await getBestClient({
                 variables: {
-                    getBestClientBySellerId: seller.id
+                    getTopClientsId: seller.id
                 },
                 context: {
                     headers: {
@@ -192,12 +193,13 @@ const AdmClient = () => {
                 }
             });
             console.log(responseData);
-            setBestClient(responseData.data.getBestClientBySeller);
-
+            setBestClient(responseData.data.getTopClients);
+            setShowBestClientModal(true);
         } catch (error) {
             console.error('Error al obtener el mejor cliente:', error);
         }
-        setShowBestClientModal(true);
+
+
     };
 
     return (
@@ -415,14 +417,22 @@ const AdmClient = () => {
 
             <Modal show={showBestClientModal} onHide={getBestClientModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Mejor Cliente</Modal.Title>
+                    <Modal.Title>Mejores Clientes</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                      <ListGroup.Item><strong>Nombre:</strong> {bestClient.name}</ListGroup.Item>
-                    <ListGroup.Item><strong>Apellido:</strong> {bestClient.lastName}</ListGroup.Item>
-                    <ListGroup.Item><strong>Empresa:</strong> {bestClient.company}</ListGroup.Item>
-                    <ListGroup.Item><strong>Teléfono:</strong> {bestClient.phoneNumber}</ListGroup.Item>
-                    <ListGroup.Item><strong>Email:</strong> {bestClient.email}</ListGroup.Item>
+                    <ListGroup as='ol' numbered>
+                        {bestClient.map((client) => (
+                            <ListGroup.Item key={client.id} as='li' className='d-flex justify-content-between align-items-start'>
+                                <div className="ms-2 me-auto">
+                                    <div className="fw-bold">{client.name} {client.lastName}</div>
+                                    <div><strong>Empresa:</strong> {client.company}</div>
+                                    <div><strong>Teléfono:</strong> {client.phoneNumber}</div>
+                                    <div><strong>Email:</strong> {client.email}</div>
+                                </div>
+                                <p>Cantidad comprada: {client.totalSpent}</p>
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={getBestClientModalClose}>
@@ -430,6 +440,7 @@ const AdmClient = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
         </div>
 
     );

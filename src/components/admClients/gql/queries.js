@@ -57,17 +57,13 @@ export const ADD_CLIENT = gql`
 `;
 
 export const GET_REPORT_BEST_CLIENTS = gql`
-    query GetBestClientBySeller($getBestClientBySellerId: ID) {
-      getBestClientBySeller(id: $getBestClientBySellerId) {
-        id
-        name
-        lastName
-        company
-        phoneNumber
-        email
-        password
-        created
-        seller
-      }
-    }
+   query GetTopClients($getTopClientsId: ID) {
+  getTopClients(id: $getTopClientsId) {
+    id
+    name
+    lastName
+    email
+    totalSpent
+  }
+}
     `;

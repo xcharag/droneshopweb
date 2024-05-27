@@ -193,7 +193,7 @@ const AdmClient = () => {
                 }
             });
             console.log(responseData);
-            setBestClient(responseData.data.getTopClients);
+            setTopBestClients(responseData.data.getTopClients);
             setShowBestClientModal(true);
         } catch (error) {
             console.error('Error al obtener el mejor cliente:', error);
@@ -421,7 +421,7 @@ const AdmClient = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <ListGroup as='ol' numbered>
-                        {bestClient.map((client) => (
+                        {topBestClients.map((client) => (
                             <ListGroup.Item key={client.id} as='li' className='d-flex justify-content-between align-items-start'>
                                 <div className="ms-2 me-auto">
                                     <div className="fw-bold">{client.name} {client.lastName}</div>

@@ -55,50 +55,48 @@ const AddProductModal = ({ show, handleClose, reloadProducts }) => {
                 }}
             >
                 {({ handleSubmit, isSubmitting }) => (
-                    <>
-                        <Form noValidate onSubmit={handleSubmit}>
-                            <ModalBody>
-                                <Form.Group controlId="formName">
-                                    <Form.Label>Nombre del Producto</Form.Label>
-                                    <Field type='text' name='name' as={Form.Control} placeholder='Nombre del Producto' />
-                                    <ErrorMessage name='name' component='div' className="text-danger" />
-                                </Form.Group>
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <ModalBody>
+                            <Form.Group controlId="formName">
+                                <Form.Label>Nombre del Producto</Form.Label>
+                                <Field type='text' name='name' as={Form.Control} placeholder='Nombre del Producto' />
+                                <ErrorMessage name='name' component='div' className="text-danger" />
+                            </Form.Group>
 
-                                <Form.Group controlId="formStock">
-                                    <Form.Label>Cantidad del Producto</Form.Label>
-                                    <Field type='number' name='stock' as={Form.Control} placeholder='Cantidad' min='1' />
-                                    <ErrorMessage name="stock" component="div" className="text-danger" />
-                                </Form.Group>
+                            <Form.Group controlId="formStock">
+                                <Form.Label>Cantidad del Producto</Form.Label>
+                                <Field type='number' name='stock' as={Form.Control} placeholder='Cantidad' min='1' />
+                                <ErrorMessage name="stock" component="div" className="text-danger" />
+                            </Form.Group>
 
-                                <Form.Group controlId="formPrice">
-                                    <Form.Label>Precio del Producto</Form.Label>
-                                    <Field type='number' name='price' as={Form.Control} placeholder='Precio' min='1' />
-                                    <ErrorMessage name="price" component="div" className="text-danger" />
-                                    <Form.Text>Precio en Bs.</Form.Text>
-                                </Form.Group>
+                            <Form.Group controlId="formPrice">
+                                <Form.Label>Precio del Producto</Form.Label>
+                                <Field type='number' name='price' as={Form.Control} placeholder='Precio' min='1' />
+                                <ErrorMessage name="price" component="div" className="text-danger" />
+                                <Form.Text>Precio en Bs.</Form.Text>
+                            </Form.Group>
 
-                                <Form.Group controlId="formModel">
-                                    <Form.Label>Modelo</Form.Label>
-                                    <Field type='text' name='model' as={Form.Control} placeholder='Modelo'></Field>
-                                    <ErrorMessage name="model" component="div" className="text-danger" />
-                                </Form.Group>
+                            <Form.Group controlId="formModel">
+                                <Form.Label>Modelo</Form.Label>
+                                <Field type='text' name='model' as={Form.Control} placeholder='Modelo'></Field>
+                                <ErrorMessage name="model" component="div" className="text-danger" />
+                            </Form.Group>
 
-                                <Form.Group controlId="formSpecifications" className="mb-2">
-                                    <Form.Label>Especificaciones</Form.Label>
-                                    <Field type='text' name='specifications' as={Form.Control} placeholder='Especificaciones'></Field>
-                                    <ErrorMessage name="specifications" component="div" className="text-danger" />
-                                </Form.Group>
-                            </ModalBody>
+                            <Form.Group controlId="formSpecifications" >
+                                <Form.Label>Especificaciones</Form.Label>
+                                <Field type='text' name='specifications' as={Form.Control} placeholder='Especificaciones'></Field>
+                                <ErrorMessage name="specifications" component="div" className="text-danger" />
+                            </Form.Group>
+                        </ModalBody>
 
-                            <Modal.Footer>
-                                <div className="d-flex justify-content-end">
-                                    <Button type="submit" variant="primary" disabled={isSubmitting || loading}>
-                                        {isSubmitting || loading ? 'Agregando' : 'Guardar Cambios'}
-                                    </Button>
-                                </div>
-                            </Modal.Footer>
-                        </Form>
-                    </>
+                        <Modal.Footer>
+                            <div className="d-flex justify-content-end">
+                                <Button type="submit" variant="primary" disabled={isSubmitting || loading}>
+                                    {isSubmitting || loading ? 'Agregando' : 'Guardar Cambios'}
+                                </Button>
+                            </div>
+                        </Modal.Footer>
+                    </Form>
                 )}
             </Formik>
         </Modal >

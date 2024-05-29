@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { GET_CLIENT_QUERY, GET_SELLER_QUERY, LOGIN_CLIENT_MUTATION, LOGIN_MUTATION } from './gql/queries.js';
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import './login.css';
 import Header from "../header/header.jsx";
+import * as yup from 'yup';
+import { ErrorMessage, Field, Formik } from 'formik';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [authError, setAuthError] = useState('');
     const navigate = useNavigate();
 
     const [loginMutation] = useMutation(LOGIN_MUTATION);
@@ -19,28 +16,17 @@ const Login = () => {
     const [getClientQuery] = useLazyQuery(GET_CLIENT_QUERY);
     const [clientLoginMutation] = useMutation(LOGIN_CLIENT_MUTATION);
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-        setEmailError('');
-        setAuthError('');
+    const validationSchema = yup.object().shape({
+        email: yup.string().email('El formato del email es invalido').required('El campo email es requerido'),
+        password: yup.string().required('El campo contraseña es requerido')
+    });
+
+    const handleSingUpClick = () => {
+        navigate('/signup');
     };
 
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-        setPasswordError('');
-        setAuthError('');
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Validación de campos de email y contraseña
-        if (!email || !password || !validateEmail(email)) {
-            setEmailError(email ? 'El formato del email no es válido' : 'El campo de email es obligatorio');
-            setPasswordError(password ? '' : 'El campo de contraseña es obligatorio');
-            return;
-        }
-
+    const handleSubmit = async (values, { setSubmitting, setFieldError, setErrors }) => {
+        const { email, password } = values;
         try {
             const { data } = await loginMutation({ variables: { email, password } });
             const token = data.authSellerLogin.token;
@@ -51,7 +37,6 @@ const Login = () => {
             localStorage.setItem('client', JSON.stringify(false));
 
             navigate('/admClient');
-
         } catch (sellerError) {
             console.error(sellerError);
             if (sellerError.message === 'El vendedor no existe') {
@@ -70,23 +55,19 @@ const Login = () => {
                 } catch (clientError) {
                     console.error(clientError);
                     if (clientError.message.includes('password')) {
-                        setAuthError('Email o contraseña incorrectos');
+                        setErrors({ auth: 'Email o contraseña incorrectos' });
                     } else {
-                        setAuthError('Error al iniciar sesión');
+                        setErrors({ auth: 'Error al iniciar sesión' });
                     }
                 }
             } else if (sellerError.message.includes('password')) {
-                setAuthError('Email o contraseña incorrectos');
+                setErrors({ auth: 'Email o contraseña incorrectos' });
             } else {
-                setAuthError('Error al iniciar sesión');
+                setErrors({ auth: 'Error al iniciar sesión' });
             }
+        } finally {
+            setSubmitting(false);
         }
-    };
-
-
-    const validateEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
     };
 
     return (
@@ -94,43 +75,45 @@ const Login = () => {
             <Header />
             <div className="login d-flex justify-content-center align-items-center vh-100">
                 <div className='p-5 bg-light rounded opacity-75'>
-                    <form id='form-login' onSubmit={handleSubmit}>
-                        <h3 className="mb-4"> Login </h3>
-                        {authError && <div className="alert alert-danger">{authError}</div>}
-                        <div className="mb-3">
-                            <label htmlFor="email"> Email </label>
-                            <input
-                                type="email"
-                                id="email"
-                                className="form-control"
-                                placeholder="Enter email"
-                                value={email}
-                                onChange={handleEmailChange}
-                            />
-                            {emailError && <div className="alert alert-danger mt-2">{emailError}</div>}
-                        </div>
+                    <Formik
+                        initialValues={{ email: '', password: '' }}
+                        validationSchema={validationSchema}
+                        onSubmit={handleSubmit}
+                    >
+                        {({ isSubmitting, errors, isValid, handleSubmit }) => (
+                            <Form onSubmit={handleSubmit}>
+                                <h3 className="mb-4">Login</h3>
+                                {errors.auth && <div className="alert alert-danger">{errors.auth}</div>}
 
-                        <div className='mb-3'>
-                            <label htmlFor="password"> Password </label>
-                            <input
-                                type="password"
-                                id="password"
-                                className="form-control"
-                                placeholder="Enter password"
-                                value={password}
-                                onChange={handlePasswordChange}
-                            />
-                            {passwordError && <div className="alert alert-danger mt-2">{passwordError}</div>}
-                        </div>
-                        <div className="mb-3">
-                            <Button type="submit" className="m-2" variant="outline-primary">Iniciar Sesión </Button>
-                            <Link to='/signUp' className="btn btn-outline-secondary">Registrarse como vendedor</Link>
-                        </div>
-                    </form>
+                                <Form.Group controlId="formEmail">
+                                    <Form.Label>Email</Form.Label>
+                                    <Field type="email" name="email" as={Form.Control} placeholder="Email" />
+                                    <ErrorMessage name="email" component="div" className="alert alert-danger mt-2" />
+                                </Form.Group>
+
+                                <Form.Group controlId="formPassword">
+                                    <Form.Label>Contraseña</Form.Label>
+                                    <Field type="password" name="password" as={Form.Control} placeholder="Contraseña" />
+                                    <ErrorMessage name="password" component="div" className="alert alert-danger mt-2" />
+                                </Form.Group>
+
+                                <div className="mb-3 d-flex justify-content-end">
+                                    <Button type="submit" className="m-2" variant="outline-primary" disabled={isSubmitting || !isValid}>
+                                        {isSubmitting ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                                    </Button>
+
+                                    <Button className='m-2' variant="outline-primary" onClick={handleSingUpClick}>
+                                        Registrarse como vendedor
+                                    </Button>
+
+                                </div>
+
+                            </Form>
+                        )}
+                    </Formik>
                 </div>
             </div>
         </section>
     );
 };
-
 export default Login;

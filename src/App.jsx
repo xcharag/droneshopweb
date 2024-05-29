@@ -9,10 +9,11 @@ import Home from './components/home/home.jsx';
 import SignUp from './components/sign-up/signUp.jsx';
 import Cart from "./components/cart/cart.jsx";
 import Products from "./components/products/products.jsx";
-import AdmClientSidebar from "./components/sidebar/admClientSideBar.jsx";
-import StockSidebar from "./components/sidebar/stockSideBar.jsx";
+import AdmClientSidebar from "./components/sidebar/locations/admClientSideBar.jsx";
+import StockSidebar from "./components/sidebar/locations/stockSideBar.jsx";
 
 import { createApolloClient } from './apolloClient';
+import AdmOrdersSideBar from "./components/sidebar/locations/admOrdersSideBar.jsx";
 
 const containerStyle = {
     paddingTop: '70px',
@@ -61,6 +62,7 @@ function App() {
                     />
                     <Route path="/admClient" element={<AdmClientSidebar />} />
                     <Route path="/stock" element={<StockSidebar />} />
+                    <Route path="/orders" element={<AdmOrdersSideBar/>} />
                 </Routes>
             </Router>
         </ApolloProvider>

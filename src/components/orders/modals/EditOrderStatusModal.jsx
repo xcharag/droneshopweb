@@ -1,71 +1,90 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Modal, ModalBody, ModalHeader } from "react-bootstrap";
+import { Button, Form, Modal, ModalBody, ModalHeader, ModalFooter, Alert } from "react-bootstrap";
 import { useMutation } from "@apollo/client";
+import PropTypes from "prop-types";
 import { UPDATE_ORDER_STATUS } from "../gql/mutations.js";
 
-// eslint-disable-next-line react/prop-types
 const EditOrderStatusModal = ({ show, handleClose, orderData, reloadOrders }) => {
-    const [editedOrder, setEditedOrder] = useState(null);
+    const [editedOrder, setEditedOrder] = useState(orderData);
     const [updateOrderStatus, { loading, error }] = useMutation(UPDATE_ORDER_STATUS);
 
     useEffect(() => {
         setEditedOrder(orderData);
     }, [orderData]);
 
-    if (!editedOrder || !show) {
-        return null;
-    }
-
     const handleStatusChange = (e) => {
-        const { name, value } = e.target;
-        setEditedOrder({ ...editedOrder, [name]: value });
+        setEditedOrder((prevOrder) => ({
+            ...prevOrder,
+            status: e.target.value
+        }));
     };
 
     const handleEditOrderStatus = async () => {
+        if (!editedOrder || !editedOrder.status || !editedOrder.id) {
+            console.error('Order data is incomplete:', editedOrder);
+            return;
+        }
         try {
-            await updateOrderStatus({
+            console.log(editedOrder.id);
+            //const seller = JSON.parse(localStorage.getItem('seller'));
+            const { data } = await updateOrderStatus({
                 variables: {
+                    updateOrderStatusId: editedOrder.id,
                     input: {
                         status: editedOrder.status
+                    },
+                },
+                context: {
+                    headers: {
+                        Authorization: localStorage.getItem('token')
                     }
                 }
             });
-            setEditedOrder({
-                status: ''
-            });
+            console.log('Mutation result:', data);
             reloadOrders();
             handleClose();
         } catch (e) {
-            console.error(e);
+            console.error('Error in mutation:', e);
         }
     };
 
+    if (!editedOrder) {
+        return null;
+    }
+
     return (
         <Modal show={show} onHide={handleClose}>
-            <ModalHeader closeButton={true}>
+            <ModalHeader closeButton>
                 <Modal.Title>Editar Estado de Orden</Modal.Title>
             </ModalHeader>
-
             <ModalBody>
-                <Form>
-                    <Form.Group controlId='formStatus'>
-                        <Form.Label>Estado</Form.Label>
-                        <Form.Select value={editedOrder.status} onChange={handleStatusChange}>
-                            <option value="PENDIENTE">Pendiente</option>
-                            <option value="COMPLETADO">Completado</option>
-                            <option value="RECHAZADO">Rechazado</option>
-                        </Form.Select>
-                    </Form.Group>
-                </Form>
+                {error && <Alert variant="danger">Error al actualizar el estado: {error.message}</Alert>}
+                <Form.Group controlId="formStatus">
+                    <Form.Label>Estado</Form.Label>
+                    <Form.Select value={editedOrder.status} onChange={handleStatusChange}>
+                        <option value="PENDIENTE">PENDIENTE</option>
+                        <option value="COMPLETADO">COMPLETADO</option>
+                        <option value="RECHAZADO">RECHAZADO</option>
+                    </Form.Select>
+                </Form.Group>
             </ModalBody>
-
-            <Modal.Footer>
-                <Button variant='primary' onClick={handleEditOrderStatus}>
-                    {loading ? 'Agregando' : "Guardar Cambios"}
+            <ModalFooter>
+                <Button variant="secondary" onClick={handleClose} disabled={loading}>
+                    Cancelar
                 </Button>
-            </Modal.Footer>
+                <Button variant="primary" onClick={handleEditOrderStatus} disabled={loading}>
+                    {loading ? "Actualizando..." : "Guardar Cambios"}
+                </Button>
+            </ModalFooter>
         </Modal>
     );
+};
+
+EditOrderStatusModal.propTypes = {
+    show: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    orderData: PropTypes.object,
+    reloadOrders: PropTypes.func.isRequired,
 };
 
 export default EditOrderStatusModal;

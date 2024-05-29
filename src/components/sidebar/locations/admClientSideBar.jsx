@@ -1,6 +1,6 @@
 import React from "react";
-import Staticsidebar from "./staticsidebar.jsx";
-import AdmClient from "../admClients/admClient.jsx";
+import Staticsidebar from "../staticsidebar.jsx";
+import AdmClient from "../../admClients/admClient.jsx";
 
 function AdmClientSidebar() {
     return (

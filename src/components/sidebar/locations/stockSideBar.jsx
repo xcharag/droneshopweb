@@ -1,6 +1,6 @@
 import React from "react";
-import Staticsidebar from "./staticsidebar.jsx";
-import Stock from "../stock/Stock.jsx";
+import Staticsidebar from "../staticsidebar.jsx";
+import Stock from "../../stock/Stock.jsx";
 
 function StockSidebar() {
     return (

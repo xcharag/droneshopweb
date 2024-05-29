@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {Button, Container, Table} from 'react-bootstrap';
 import { useLazyQuery } from '@apollo/client';
 import { GET_ORDERS_BY_SELLER } from './gql/query.js';
+import EditOrderStatusModal from "./modals/EditOrderStatusModal.jsx";
 
 const SellerOrders = () => {
     const [orders, setOrders] = useState([]);
+    const [showEditOrderStatusModal, setShowEditOrderStatusModal] = useState(false);
+    const [orderToEdit, setOrderToEdit] = useState(null);
     const [getOrdersBySeller] = useLazyQuery(GET_ORDERS_BY_SELLER);
+
 
     useEffect(() => {
         getOrders(); // Ejecutar la consulta al montar el componente
@@ -32,6 +36,13 @@ const SellerOrders = () => {
             console.error('Error al obtener las ordenes:', error);
         }
     };
+    const openEditModal = () => {
+        setShowEditOrderStatusModal(true);
+    };
+    const closeEditModal = () => {
+        setShowEditOrderStatusModal(false);
+    };
+
     return (
         <div className="text-white p-4 mt-5 m-5" style={{minHeight: '100vh', backgroundColor: '#41484e'}}>
             <Container>
@@ -46,9 +57,9 @@ const SellerOrders = () => {
                             <th>ID de Producto</th>
                             <th>Cantidad</th>
                             <th>Cliente</th>
-                            <th>Vendedor</th>
                             <th>Estado</th>
                             <th>Total</th>
+                            <th>Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -58,15 +69,26 @@ const SellerOrders = () => {
                                 <td>{order.order.map(o => o.id).join(', ')}</td>
                                 <td>{order.order.map(o => o.quantity).join(', ')}</td>
                                 <td>{order.client}</td>
-                                <td>{order.seller}</td>
                                 <td>{order.status}</td>
                                 <td>{order.total}</td>
+                                <td>
+                                    <Button variant='primary' onClick={() => {
+                                        setOrderToEdit(order);
+                                        openEditModal();
+                                    }}>Editar</Button>
+                                </td>
                             </tr>
-                        ))}
+                            ))}
                         </tbody>
                     </Table>
                 </div>
             </Container>
+            <EditOrderStatusModal
+                show={showEditOrderStatusModal}
+                handleClose={closeEditModal}
+                orderData={orderToEdit}
+                reloadOrders={getOrders}
+            />
         </div>
     );
 };

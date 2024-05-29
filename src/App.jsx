@@ -1,9 +1,9 @@
-import React from 'react';
-import { ApolloProvider } from '@apollo/client';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { ApolloProvider, useLazyQuery } from '@apollo/client';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Footer from './components/footer/footer.jsx';
-import Header from './components/header/header.jsx'; // Import your header component here
+import Header from './components/header/header.jsx';
 import Login from './components/login/login.jsx';
 import Home from './components/home/home.jsx';
 import SignUp from './components/sign-up/signUp.jsx';
@@ -13,6 +13,7 @@ import AdmClientSidebar from "./components/sidebar/admClientSideBar.jsx";
 import StockSidebar from "./components/sidebar/stockSideBar.jsx";
 
 import { createApolloClient } from './apolloClient';
+import { VALIDATE_TOKEN } from './query';
 
 const containerStyle = {
     paddingTop: '70px',
@@ -21,10 +22,9 @@ const containerStyle = {
     backgroundColor: '#242424'
 };
 
-
 const DefaultLayout = ({ children }) => (
     <>
-        <Header /> {/* Include the header component */}
+        <Header />
         <Container fluid style={containerStyle}>
             {children}
         </Container>
@@ -32,35 +32,57 @@ const DefaultLayout = ({ children }) => (
     </>
 );
 
+const PrivateRoute = ({ element, allowedRoles }) => {
+    const [isAuthorized, setIsAuthorized] = useState(null);
+    const [userType, setUserType] = useState(null);
+    const [validateToken] = useLazyQuery(VALIDATE_TOKEN);
+
+    useEffect(() => {
+        const checkToken = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const { data } = await validateToken({
+                        context: {
+                            headers: {
+                                Authorization: token,
+                            },
+                        },
+                    });
+                    setIsAuthorized(data?.validateToken?.status || false);
+                    setUserType(data?.validateToken?.type || 'NONE');
+                } else {
+                    setIsAuthorized(false);
+                }
+            } catch (err) {
+                console.error(err);
+                setIsAuthorized(false);
+            }
+        };
+        checkToken();
+    }, [validateToken]);
+
+    if (isAuthorized === null) {
+        return <div>Loading...</div>;
+    }
+
+    return isAuthorized && allowedRoles.includes(userType) ? element : <Navigate to="/" />;
+};
+
 function App() {
-    const apolloClient = createApolloClient(); // Create an instance of Apollo Client
+    const apolloClient = createApolloClient();
 
     return (
-        <ApolloProvider client={apolloClient} fluid>
+        <ApolloProvider client={apolloClient}>
             <Router>
                 <Routes>
-                    <Route
-                        path="/"
-                        element={<DefaultLayout><Home /></DefaultLayout>}
-                    />
-                    <Route
-                        path="/login"
-                        element={<DefaultLayout><Login /></DefaultLayout>}
-                    />
-                    <Route
-                        path="/cart"
-                        element={<DefaultLayout><Cart /></DefaultLayout>}
-                    />
-                    <Route
-                        path="/products"
-                        element={<DefaultLayout><Products /></DefaultLayout>}
-                    />
-                    <Route
-                        path="/signUp"
-                        element={<DefaultLayout><SignUp/></DefaultLayout>}
-                    />
-                    <Route path="/admClient" element={<AdmClientSidebar />} />
-                    <Route path="/stock" element={<StockSidebar />} />
+                    <Route path="/" element={<DefaultLayout><Home /></DefaultLayout>} />
+                    <Route path="/login" element={<DefaultLayout><Login /></DefaultLayout>} />
+                    <Route path="/cart" element={<PrivateRoute element={<DefaultLayout><Cart /></DefaultLayout>} allowedRoles={['SELLER', 'CLIENT']} />} />
+                    <Route path="/products" element={<DefaultLayout><Products /></DefaultLayout>} />
+                    <Route path="/signUp" element={<DefaultLayout><SignUp /></DefaultLayout>} />
+                    <Route path="/admClient" element={<PrivateRoute element={<AdmClientSidebar />} allowedRoles={['SELLER']} />} />
+                    <Route path="/stock" element={<PrivateRoute element={<StockSidebar />} allowedRoles={['SELLER']} />} />
                 </Routes>
             </Router>
         </ApolloProvider>

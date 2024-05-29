@@ -10,7 +10,7 @@ import ModelFilter from "./components/ModelFilter.jsx";
 
 const ProductPage = () => {
     const [products, setProducts] = useState([]);
-    const [getProducts, { data }] = useLazyQuery(GET_PRODUCTS_QUERY);
+    const [getProducts, { data, error, loading }] = useLazyQuery(GET_PRODUCTS_QUERY);
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [modalTitleColor, setModalTitleColor] = useState("");
@@ -33,6 +33,7 @@ const ProductPage = () => {
 
     useEffect(() => {
         if (data) {
+            console.log("Products Data:", data); // Log the data
             const updatedProducts = data.getAllProducts.map(product => {
                 const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
                 const totalQuantityInCart = cart.reduce((total, item) => {
@@ -50,6 +51,12 @@ const ProductPage = () => {
             setMaxPrice(maxPriceFromProducts);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (error) {
+            console.error("Products Error:", error); // Log the error
+        }
+    }, [error]);
 
     const handleAddToCart = (product) => {
         // Calculate total quantity of the same product in the cart

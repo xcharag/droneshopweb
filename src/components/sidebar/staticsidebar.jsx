@@ -29,6 +29,7 @@ function staticSidebar() {
                         <Button as={Link} to="/" variant="secondary" size= "sm" className="mb-2">Inicio</Button>
                         <Button as={Link} to="/admClient" variant="secondary" size= "sm" block>Administrar Clientes</Button>
                         <Button as={Link} to="/stock" variant="secondary" size= "sm" block>Administrar Productos</Button>
+                        <Button as={Link} to="/orders" variant="secondary" size= "sm" block>Ver Órdenes</Button>
                     </div>
                 </div>
             </Nav>

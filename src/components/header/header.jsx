@@ -6,26 +6,26 @@ import { FaHome, FaShoppingCart } from "react-icons/fa";
 import { PiDrone } from "react-icons/pi";
 import { RiAdminFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../AuthContext';
 
 const Header = () => {
     const location = useLocation();
-    const isLoggedIn = localStorage.getItem("token") !== null;
-    const isSeller = localStorage.getItem("seller") !== "false";
+    const { isAuthorized, userType } = useAuth();
     const navigate = useNavigate();
 
     // Get cart items from sessionStorage
     const cartItems = JSON.parse(sessionStorage.getItem("cart")) || [];
     const cartItemCount = cartItems.length;
 
-    const isActive = (path) => {
-        return location.pathname === path;
-    };
+    const isActive = (path) => location.pathname === path;
 
     const handleLogout = () => {
-        localStorage.setItem("seller", "false")
-        localStorage.removeItem("client");
         localStorage.removeItem("token");
+        localStorage.removeItem("seller");
+        localStorage.removeItem("client");
+        sessionStorage.removeItem("cart");
         navigate("/");
+        window.location.reload(); // Reload to reset context
     };
 
     return (
@@ -45,20 +45,20 @@ const Header = () => {
                             <PiDrone className="me-1" />
                             Productos
                         </Nav.Link>
-                        {isSeller && ( // Conditionally render "Administración" nav link for sellers
+                        {isAuthorized && userType === 'SELLER' && (
                             <Nav.Link as={Link} to="/admClient" active={isActive("/admClient")}>
-                                <RiAdminFill className="me-1"/>
+                                <RiAdminFill className="me-1" />
                                 Administración
                             </Nav.Link>
                         )}
-                        <Nav.Link as={Link} to="/cart" disabled={!isLoggedIn} active={isActive("/cart")}>
+                        <Nav.Link as={Link} to="/cart" disabled={!isAuthorized} active={isActive("/cart")}>
                             <FaShoppingCart className="me-1" />
                             Carrito
                             {cartItemCount > 0 && <Badge bg="secondary">{cartItemCount}</Badge>}
                         </Nav.Link>
                     </Nav>
                     <Nav className="ms-3">
-                        {isLoggedIn ? (
+                        {isAuthorized ? (
                             <Button onClick={handleLogout} variant="danger" className="ms-2 rounded-pill shadow">
                                 Cerrar sesión
                             </Button>

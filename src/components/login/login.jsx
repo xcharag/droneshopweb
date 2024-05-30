@@ -21,11 +21,11 @@ const Login = () => {
         password: yup.string().required('El campo contraseña es requerido')
     });
 
-    const handleSingUpClick = () => {
+    const handleSignUpClick = () => {
         navigate('/signup');
     };
 
-    const handleSubmit = async (values, { setSubmitting, setFieldError, setErrors }) => {
+    const handleSubmit = async (values, { setSubmitting, setErrors }) => {
         const { email, password } = values;
         try {
             const { data } = await loginMutation({ variables: { email, password } });
@@ -37,6 +37,7 @@ const Login = () => {
             localStorage.setItem('client', JSON.stringify(false));
 
             navigate('/admClient');
+            window.location.reload(); // Refresh context and re-render
         } catch (sellerError) {
             console.error(sellerError);
             if (sellerError.message === 'El vendedor no existe') {
@@ -51,6 +52,7 @@ const Login = () => {
                     localStorage.setItem('token', token);
 
                     navigate('/');
+                    window.location.reload(); // Refresh context and re-render
 
                 } catch (clientError) {
                     console.error(clientError);
@@ -102,7 +104,7 @@ const Login = () => {
                                         {isSubmitting ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                                     </Button>
 
-                                    <Button className='m-2' variant="outline-primary" onClick={handleSingUpClick}>
+                                    <Button className='m-2' variant="outline-primary" onClick={handleSignUpClick}>
                                         Registrarse como vendedor
                                     </Button>
 
@@ -116,4 +118,5 @@ const Login = () => {
         </section>
     );
 };
+
 export default Login;

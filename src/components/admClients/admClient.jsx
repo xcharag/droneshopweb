@@ -1,34 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import {Button, Modal, Table, Form, ListGroup} from 'react-bootstrap';
-import {useMutation, useLazyQuery} from '@apollo/client';
+import { Button, Modal, Table, Form, ListGroup } from 'react-bootstrap';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { GET_CLIENTS_BY_SELLER, UPDATE_CLIENT, DELETE_CLIENT, ADD_CLIENT, GET_REPORT_BEST_CLIENTS } from './gql/queries.js';
+import * as yup from 'yup';
+import { ErrorMessage, Field, Formik } from 'formik';
+
+const clientSchema = yup.object().shape({
+    name: yup.string().required('El nombre del cliente es requerido'),
+    lastName: yup.string().required('El apellido del cliente es requerido'),
+    company: yup.string().required('La empresa del cliente es requerida'),
+    phoneNumber: yup.string().required('El teléfono del cliente es requerido'),
+    email: yup.string().email('El email no es válido').required('El email del cliente es requerido'),
+    password: yup.string().required('La contraseña del cliente es requerida')
+});
 
 const AdmClient = () => {
     const [clients, setClients] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [showBestClientModal,setShowBestClientModal] = useState(false);
-
+    const [showBestClientModal, setShowBestClientModal] = useState(false);
     const [clientToEdit, setClientToEdit] = useState(null);
     const [clientToDelete, setClientToDelete] = useState(null);
-    const [clientToAdd, setClientToAdd] = useState(null);
-    const [client] = useState({
-        name: '',
-        lastName: '',
-        company: '',
-        phoneNumber: '',
-        email: '',
-        password: ''
-    });
-    const [bestClient, setBestClient] = useState({
-        name: '',
-        lastName: '',
-        company: '',
-        phoneNumber: '',
-        email: '',
-        password: ''
-    });
 
     const [updateClient] = useMutation(UPDATE_CLIENT);
     const [deleteClient] = useMutation(DELETE_CLIENT);
@@ -37,10 +30,80 @@ const AdmClient = () => {
     const [getBestClient] = useLazyQuery(GET_REPORT_BEST_CLIENTS);
     const [topBestClients, setTopBestClients] = useState([]);
 
+    const initialValues = {
+        name: '',
+        lastName: '',
+        company: '',
+        phoneNumber: '',
+        email: '',
+        password: '',
+    }
+
+    const handleAddModalClose = () => setShowAddModal(false);
+    const handleAddModalShow = () => setShowAddModal(true);
+    const handleEditModalClose = () => setShowEditModal(false);
+
+    const handleEditClient = (client) => {
+        setClientToEdit(client);
+        setShowEditModal(true);
+    }
+
+    const handleFormSubmit = async (values, actions, isEdit = false) => {
+        try {
+            if (isEdit) {
+                const seller = JSON.parse(localStorage.getItem('seller'));
+                await updateClient({
+                    variables: {
+                        clientUpdateId: clientToEdit.id,
+                        input: {
+                            name: values.name,
+                            lastName: values.lastName,
+                            email: values.email,
+                            password: values.password,
+                            company: values.company,
+                            phoneNumber: values.phoneNumber
+                        },
+                        updateSellerId: seller.id
+                    },
+                    context: {
+                        headers: {
+                            Authorization: localStorage.getItem('token')
+                        }
+                    }
+                });
+                handleEditModalClose();
+            } else {
+                await addClient({
+                    variables: {
+                        input: {
+                            name: values.name,
+                            lastName: values.lastName,
+                            email: values.email,
+                            password: values.password,
+                            company: values.company,
+                            phoneNumber: values.phoneNumber
+                        }
+                    },
+                    context: {
+                        headers: {
+                            Authorization: localStorage.getItem('token')
+                        }
+                    }
+                });
+                handleAddModalClose();
+            }
+            actions.resetForm();
+            window.location.reload();
+        } catch (error) {
+            console.error('Error adding client:', error);
+        } finally {
+            actions.setSubmitting(false);
+        }
+    }
+
     useEffect(() => {
         getClients(); // Para ejecutar la consulta al montar el componente y cuando haya cambios
     }, []);
-
 
     const getClients = async () => {
         try {
@@ -64,47 +127,6 @@ const AdmClient = () => {
     }
 
 
-    const handleEditClick = (client) => {
-        console.log("Edit button clicked", client);
-        setClientToEdit(client);
-        setShowEditModal(true);
-    };
-
-    const handleEditModalClose = () => {
-        setShowEditModal(false);
-    };
-
-
-    const handleEditClient = async () => {
-        try {
-            const seller = JSON.parse(localStorage.getItem('seller'));
-            await updateClient({
-
-                variables: {
-                    clientUpdateId: clientToEdit.id,
-                    input: {
-                        name: clientToEdit.name,
-                        lastName: clientToEdit.lastName,
-                        email: clientToEdit.email,
-                        password: clientToEdit.password,
-                        company: clientToEdit.company,
-                        phoneNumber: clientToEdit.phoneNumber
-                    },
-                    updateSellerId: seller.id
-                },
-                context: {
-                    headers: {
-                        Authorization: localStorage.getItem('token')
-                    }
-                }
-            });
-            setShowEditModal(false);
-            await getClients();
-        } catch (error) {
-            console.error('Error al cambiar datos del cliente', error);
-        }
-    };
-
     const handleDeleteClick = (client) => {
         setClientToDelete(client);
         setShowDeleteModal(true);
@@ -115,7 +137,7 @@ const AdmClient = () => {
     const handleDeleteConfirm = async () => {
         try {
 
-           await deleteClient({
+            await deleteClient({
                 variables: {
                     deleteClientId: clientToDelete.id
                 },
@@ -129,48 +151,6 @@ const AdmClient = () => {
             window.location.reload();
         } catch (error) {
             console.error('Error al eliminar el cliente:', error);
-        }
-    };
-
-    const handleAddClick = () => {
-        console.log("Add button clicked", client);
-        setShowAddModal(true);
-        setClientToAdd(client);
-    };
-    const handleAddModalClose = () => {
-        setShowAddModal(false);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        await handleAddClient();
-    };
-
-    const handleAddClient = async () => {
-        try {
-            const { responseData } = await addClient({
-                variables: {
-                    input: {
-                        name: clientToAdd.name,
-                        lastName: clientToAdd.lastName,
-                        email: clientToAdd.email,
-                        password: clientToAdd.password,
-                        company: clientToAdd.company,
-                        phoneNumber: clientToAdd.phoneNumber
-                    }
-                },
-                context: {
-                    headers: {
-                        Authorization: localStorage.getItem('token')
-                    }
-                }
-
-            });
-            console.log(responseData);
-            setShowAddModal(false);
-            window.location.reload();
-        } catch (error) {
-            console.error('Error al agregar cliente:', error);
         }
     };
 
@@ -198,8 +178,6 @@ const AdmClient = () => {
         } catch (error) {
             console.error('Error al obtener el mejor cliente:', error);
         }
-
-
     };
 
     return (
@@ -213,110 +191,100 @@ const AdmClient = () => {
 
             <Table striped bordered hover variant="dark">
                 <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Empresa</th>
-                    <th>Teléfono</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
-                </tr>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Empresa</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {clients.map(client => (
-                    <tr key={client.id}>
-                        <td>{client.id}</td>
-                        <td>{client.name}</td>
-                        <td>{client.lastName}</td>
-                        <td>{client.company}</td>
-                        <td>{client.phoneNumber}</td>
-                        <td>{client.email}</td>
-                        <td>
-                            <Button variant="primary" onClick={() => handleEditClick(client)}>Editar</Button>
-                            <Button variant="danger" onClick={() => handleDeleteClick(client)} className="m-lg-2">Eliminar</Button>
-                        </td>
-                    </tr>
-                ))}
+                    {clients.map(client => (
+                        <tr key={client.id}>
+                            <td>{client.id}</td>
+                            <td>{client.name}</td>
+                            <td>{client.lastName}</td>
+                            <td>{client.company}</td>
+                            <td>{client.phoneNumber}</td>
+                            <td>{client.email}</td>
+                            <td>
+                                <Button variant="primary" onClick={() => handleEditClient(client)}>Editar</Button>
+                                <Button variant="danger" onClick={() => handleDeleteClick(client)} className="m-lg-2">Eliminar</Button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </Table>
 
-            <Button variant="primary" onClick={() =>handleAddClick(client)}>Agregar Cliente</Button>
+            <Button variant="primary" onClick={handleAddModalShow}>Agregar Cliente</Button>
 
-            <Modal show={showEditModal} onHide={handleEditModalClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Editar Cliente</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formName">
-                            <Form.Label>Nombre</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese el nombre"
-                                value={clientToEdit ? clientToEdit.name : ''}
-                                onChange={(e) => setClientToEdit({ ...clientToEdit, name: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formLastName">
-                            <Form.Label>Apellido</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese el apellido"
-                                value={clientToEdit ? clientToEdit.lastName : ''}
-                                onChange={(e) => setClientToEdit({ ...clientToEdit, lastName: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formCompany">
-                            <Form.Label>Empresa</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese la empresa"
-                                value={clientToEdit ? clientToEdit.company : ''}
-                                onChange={(e) => setClientToEdit({ ...clientToEdit, company: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formPhoneNumber">
-                            <Form.Label>Teléfono</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese el teléfono"
-                                value={clientToEdit ? clientToEdit.phoneNumber : ''}
-                                onChange={(e) => setClientToEdit({ ...clientToEdit, phoneNumber: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formEmail">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="Ingrese el email"
-                                value={clientToEdit ? clientToEdit.email : ''}
-                                onChange={(e) => setClientToEdit({ ...clientToEdit, email: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formPassword">
-                            <Form.Label>Contraseña</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="Ingrese la contraseña"
-                                value={clientToEdit ? clientToEdit.password : ''}
-                                onChange={(e) => setClientToEdit({ ...clientToEdit, password: e.target.value })}
-                            />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
+            {clientToEdit && (
+                <Modal show={showEditModal} onHide={handleEditModalClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Editar Cliente</Modal.Title>
+                    </Modal.Header>
+                    <Formik
+                        initialValues={clientToEdit}
+                        validationSchema={clientSchema}
+                        onSubmit={(values, actions) => handleFormSubmit(values, actions, true)}
+                    >
+                        {({ handleSubmit, isSubmitting }) => (
+                            <Form noValidate onSubmit={handleSubmit}>
+                                <Modal.Body>
 
+                                    <Form.Group controlId="formName">
+                                        <Form.Label>Nombre</Form.Label>
+                                        <Field type='text' name='name' as={Form.Control} placeholder='Nombre' />
+                                        <ErrorMessage name='name' component='div' className="text-danger" />
+                                    </Form.Group>
 
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleEditModalClose}>
-                        Cerrar
-                    </Button>
-                    <Button variant="primary" onClick={() => handleEditClient(clientToEdit)}>
-                        Guardar cambios
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                                    <Form.Group controlId="formLastName">
+                                        <Form.Label>Apellido</Form.Label>
+                                        <Field type='text' name='lastName' as={Form.Control} placeholder='Apellido' />
+                                        <ErrorMessage name='lastName' component='div' className="text-danger" />
+                                    </Form.Group>
 
+                                    <Form.Group controlId="formCompany">
+                                        <Form.Label>Empresa</Form.Label>
+                                        <Field type='text' name='company' as={Form.Control} placeholder='Empresa' />
+                                        <ErrorMessage name='company' component='div' className="text-danger" />
+                                    </Form.Group>
+
+                                    <Form.Group controlId="formPhoneNumber">
+                                        <Form.Label>Teléfono</Form.Label>
+                                        <Field type='text' name='phoneNumber' as={Form.Control} placeholder='Teléfono' />
+                                        <ErrorMessage name='phoneNumber' component='div' className="text-danger" />
+                                    </Form.Group>
+
+                                    <Form.Group controlId="formEmail">
+                                        <Form.Label>Email</Form.Label>
+                                        <Field type='email' name='email' as={Form.Control} placeholder='Email' />
+                                        <ErrorMessage name='email' component='div' className="text-danger" />
+                                    </Form.Group>
+
+                                    <Form.Group controlId="formPassword">
+                                        <Form.Label>Contraseña</Form.Label>
+                                        <Field type='password' name='password' as={Form.Control} placeholder='Contraseña' />
+                                        <ErrorMessage name='password' component='div' className="text-danger" />
+                                    </Form.Group>
+                                </Modal.Body>
+
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleEditModalClose}>
+                                        Cerrar
+                                    </Button>
+                                    <Button type='submit' variant="primary" disabled={isSubmitting}>
+                                        {isSubmitting ? 'Guardando...' : 'Guardar'}
+                                    </Button>
+                                </Modal.Footer>
+                            </Form>
+                        )}
+                    </Formik>
+                </Modal>
+            )}
 
             <Modal show={showDeleteModal} onHide={handleDeleteModalClose}>
                 <Modal.Header closeButton>
@@ -340,78 +308,62 @@ const AdmClient = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Agregar Cliente</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="formName">
-                            <Form.Label>Nombre</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese el nombre"
-                                name="name"
-                                value={clientToAdd ? clientToAdd.name : ''}
-                                onChange={(e) => setClientToAdd({ ...clientToAdd, name: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formLastName">
-                            <Form.Label>Apellido</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese el apellido"
-                                name="lastName"
-                                value={clientToAdd ? clientToAdd.lastName : ''}
-                                onChange={(e) => setClientToAdd({ ...clientToAdd, lastName: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formCompany">
-                            <Form.Label>Empresa</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese la empresa"
-                                name="company"
-                                value={clientToAdd ? clientToAdd.company : ''}
-                                onChange={(e) => setClientToAdd({ ...clientToAdd, company: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formPhoneNumber">
-                            <Form.Label>Teléfono</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese el teléfono"
-                                name="phoneNumber"
-                                value={clientToAdd ? clientToAdd.phoneNumber : ''}
-                                onChange={(e) => setClientToAdd({ ...clientToAdd, phoneNumber: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formEmail">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="Ingrese el email"
-                                name="email"
-                                value={clientToAdd ? clientToAdd.email : ''}
-                                onChange={(e) => setClientToAdd({ ...clientToAdd, email: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formPassword">
-                            <Form.Label>Contraseña</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="Ingrese la contraseña"
-                                name="password"
-                                value={clientToAdd ? clientToAdd.password : ''}
-                                onChange={(e) => setClientToAdd({ ...clientToAdd, password: e.target.value })}
-                            />
-                        </Form.Group>
-                        <div className='buttonsModal mt-2'>
-                        <Button variant="secondary" onClick={handleAddModalClose}>
-                            Cerrar
-                        </Button>
-                        <Button variant="primary" type="submit" className='m-2'>
-                            Agregar
-                        </Button>
-                        </div>
-                    </Form>
-                </Modal.Body>
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={clientSchema}
+                    onSubmit={(values, actions) => handleFormSubmit(values, actions)}
+                >
+                    {({ handleSubmit, isSubmitting }) => (
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Modal.Body>
+                                <Form.Group controlId="formName">
+                                    <Form.Label>Nombre</Form.Label>
+                                    <Field type='text' name='name' as={Form.Control} placeholder='Nombre' />
+                                    <ErrorMessage name='name' component='div' className="text-danger" />
+                                </Form.Group>
+
+                                <Form.Group controlId="formLastName">
+                                    <Form.Label>Apellido</Form.Label>
+                                    <Field type='text' name='lastName' as={Form.Control} placeholder='Apellido' />
+                                    <ErrorMessage name='lastName' component='div' className="text-danger" />
+                                </Form.Group>
+
+                                <Form.Group controlId="formCompany">
+                                    <Form.Label>Empresa</Form.Label>
+                                    <Field type='text' name='company' as={Form.Control} placeholder='Empresa' />
+                                    <ErrorMessage name='company' component='div' className="text-danger" />
+                                </Form.Group>
+
+                                <Form.Group controlId="formPhoneNumber">
+                                    <Form.Label>Teléfono</Form.Label>
+                                    <Field type='text' name='phoneNumber' as={Form.Control} placeholder='Teléfono' />
+                                    <ErrorMessage name='phoneNumber' component='div' className="text-danger" />
+                                </Form.Group>
+
+                                <Form.Group controlId="formEmail">
+                                    <Form.Label>Email</Form.Label>
+                                    <Field type='email' name='email' as={Form.Control} placeholder='Email' />
+                                    <ErrorMessage name='email' component='div' className="text-danger" />
+                                </Form.Group>
+
+                                <Form.Group controlId="formPassword">
+                                    <Form.Label>Contraseña</Form.Label>
+                                    <Field type='password' name='password' as={Form.Control} placeholder='Contraseña' />
+                                    <ErrorMessage name='password' component='div' className="text-danger" />
+                                </Form.Group>
+
+                                <div className='buttonsModal mt-2'>
+                                    <Button variant="secondary" onClick={handleAddModalClose}>
+                                        Cerrar
+                                    </Button>
+                                    <Button variant="primary" type="submit" className='m-2' disabled={isSubmitting}>
+                                        {isSubmitting ? 'Agregando...' : 'Agregar'}
+                                    </Button>
+                                </div>
+                            </Modal.Body>
+                        </Form>
+                    )}
+                </Formik>
             </Modal>
 
 

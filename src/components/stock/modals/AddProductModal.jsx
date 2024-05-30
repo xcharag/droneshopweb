@@ -1,119 +1,106 @@
-import React, {useState} from "react";
-import {Button, Form, Modal, ModalBody, ModalHeader, ModalTitle} from "react-bootstrap";
-import {useMutation} from "@apollo/client";
-import {NEW_PRODUCT} from "../gql/mutations.js";
+import React, { useState } from "react";
+import { Button, Form, FormGroup, Modal, ModalBody, ModalHeader, ModalTitle } from "react-bootstrap";
+import { useMutation } from "@apollo/client";
+import { NEW_PRODUCT } from "../gql/mutations.js";
+import * as yup from "yup";
+import { ErrorMessage, Field, Formik } from "formik";
 
-const AddProductModal = ({show, handleClose, reloadProducts}) => {
-    const [addProduct, {loading, error}] = useMutation(NEW_PRODUCT);
-    const [formData, setFormData] = useState({
-        name: '',
-        stock: 0,
-        price: 0,
-        model: '',
-        specifications: ''
-    });
+const productSchema = yup.object().shape({
+    name: yup.string().required("El nombre del producto es requerido"),
+    stock: yup.number().integer().positive("La cantidad debe ser mayor a 0").required("La cantidad es requerida"),
+    price: yup.number().integer().positive("El precio debe ser mayor a 0").required("El precio es requerido"),
+    model: yup.string().required("El modelo es requerido"),
+    specifications: yup.string().required("Las especificaciones son requeridas")
+});
 
-    const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
-    }
+const AddProductModal = ({ show, handleClose, reloadProducts }) => {
 
-    const handleAddProduct = async () => {
-        try {
-           await addProduct({
-                variables: {
-                    input: {
-                        name: formData.name,
-                        stock: parseInt(formData.stock),
-                        price: parseFloat(formData.price),
-                        model: formData.model,
-                        specifications: formData.specifications
-                    }
-                }
-            });
-
-            setFormData({
-                name: '',
-                stock: 0,
-                price: 0,
-                model: '',
-                specifications: ''
-            });
-            reloadProducts();
-            handleClose();
-        } catch (e) {
-            console.error('Error adding product', error);
-        }
-    }
+    const [addProduct, { loading, error }] = useMutation(NEW_PRODUCT);
 
     return (
         <Modal show={show} onHide={handleClose}>
             <ModalHeader closeButton>
                 <ModalTitle>Agregar Producto</ModalTitle>
             </ModalHeader>
-            <ModalBody>
-                <Form>
-                    <Form.Group controlId='formName'>
-                        <Form.Label>Nombre del Producto</Form.Label>
-                        <Form.Control type='text'
-                                      placeholder='Producto'
-                                      name="name"
-                                      value={formData.name}
-                                      onChange={handleInputChange}
-                        />
-                    </Form.Group>
+            <Formik
+                initialValues={{
+                    name: '',
+                    stock: 0,
+                    price: 0,
+                    model: '',
+                    specifications: ''
+                }}
+                validationSchema={productSchema}
+                onSubmit={async (values, { setSubmitting, resetForm }) => {
+                    try {
+                        await addProduct({
+                            variables: {
+                                input: {
+                                    name: values.name,
+                                    stock: parseInt(values.stock),
+                                    price: parseFloat(values.price),
+                                    model: values.model,
+                                    specifications: values.specifications
+                                }
+                            }
+                        });
+                        resetForm();
+                        reloadProducts();
+                        handleClose();
+                    } catch {
+                        console.error('Error adding product', error);
+                    } finally {
+                        setSubmitting(false);
+                    }
+                }}
+            >
+                {({ handleSubmit, isSubmitting }) => (
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <ModalBody>
+                            <Form.Group controlId="formName">
+                                <Form.Label>Nombre del Producto</Form.Label>
+                                <Field type='text' name='name' as={Form.Control} placeholder='Nombre del Producto' />
+                                <ErrorMessage name='name' component='div' className="text-danger" />
+                            </Form.Group>
 
-                    <Form.Group controlId='formStock'>
-                        <Form.Label>Cantidad del producto</Form.Label>
-                        <Form.Control type='number'
-                                      placeholder='Cantidad'
-                                      min='1'
-                                      name='stock'
-                                      value={formData.stock}
-                                      onChange={handleInputChange}
-                        />
-                    </Form.Group>
+                            <Form.Group controlId="formStock">
+                                <Form.Label>Cantidad del Producto</Form.Label>
+                                <Field type='number' name='stock' as={Form.Control} placeholder='Cantidad' min='1' />
+                                <ErrorMessage name="stock" component="div" className="text-danger" />
+                            </Form.Group>
 
-                    <Form.Group controlId='formPrice'>
-                        <Form.Label>Precio unitario</Form.Label>
-                        <Form.Control placeholder='Precio'
-                                      name='price'
-                                      value={formData.price}
-                                      onChange={handleInputChange}
-                        />
-                        <Form.Text>Precio en Bs.</Form.Text>
-                    </Form.Group>
+                            <Form.Group controlId="formPrice">
+                                <Form.Label>Precio del Producto</Form.Label>
+                                <Field type='number' name='price' as={Form.Control} placeholder='Precio' min='1' />
+                                <ErrorMessage name="price" component="div" className="text-danger" />
+                                <Form.Text>Precio en Bs.</Form.Text>
+                            </Form.Group>
 
-                    <Form.Group controlId='formModel'>
-                        <Form.Label>Modelo</Form.Label>
-                        <Form.Control type='text'
-                                      name='model'
-                                      value={formData.model}
-                                      onChange={handleInputChange}
-                        />
-                    </Form.Group>
+                            <Form.Group controlId="formModel">
+                                <Form.Label>Modelo</Form.Label>
+                                <Field type='text' name='model' as={Form.Control} placeholder='Modelo'></Field>
+                                <ErrorMessage name="model" component="div" className="text-danger" />
+                            </Form.Group>
 
-                    <Form.Group controlId='formSpecifications'>
-                        <Form.Label>Especificaciones</Form.Label>
-                        <Form.Control type='text-area'
-                                      rows={5}
-                                      name='specifications'
-                                      value={formData.specifications}
-                                      onChange={handleInputChange}
+                            <Form.Group controlId="formSpecifications" >
+                                <Form.Label>Especificaciones</Form.Label>
+                                <Field type='text' name='specifications' as={Form.Control} placeholder='Especificaciones'></Field>
+                                <ErrorMessage name="specifications" component="div" className="text-danger" />
+                            </Form.Group>
+                        </ModalBody>
 
-                        />
-                    </Form.Group>
-                </Form>
-            </ModalBody>
-            <Modal.Footer>
-                <Button variant='primary'
-                        onClick={() => handleAddProduct()}
-                        disabled={loading}
-                >
-                    {loading ? "Agregando" : "Guardar Cambios"}
-                </Button>
-            </Modal.Footer>
-        </Modal>
+                        <Modal.Footer>
+                            <div className="d-flex justify-content-end">
+                                <Button type="submit" variant="primary" disabled={isSubmitting || loading}>
+                                    {isSubmitting || loading ? 'Agregando' : 'Guardar Cambios'}
+                                </Button>
+                            </div>
+                        </Modal.Footer>
+                    </Form>
+                )}
+            </Formik>
+        </Modal >
     );
 }
-export default AddProductModal
+
+export default AddProductModal;

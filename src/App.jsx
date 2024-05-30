@@ -9,12 +9,12 @@ import Home from './components/home/home.jsx';
 import SignUp from './components/sign-up/signUp.jsx';
 import Cart from "./components/cart/cart.jsx";
 import Products from "./components/products/products.jsx";
-import AdmClientSidebar from "./components/sidebar/admClientSideBar.jsx";
-import StockSidebar from "./components/sidebar/stockSideBar.jsx";
+import AdmClientSidebar from "./components/sidebar/locations/admClientSideBar.jsx";
+import StockSidebar from "./components/sidebar/locations/stockSideBar.jsx";
+import AdmOrdersSideBar from "./components/sidebar/locations/admOrdersSideBar.jsx";
 import AuthProvider from './AuthContext';
 import PrivateRoute from './PrivateRoute'; // Extract the PrivateRoute component into its own file
 import { createApolloClient } from './apolloClient';
-import AdmOrdersSideBar from "./components/sidebar/locations/admOrdersSideBar.jsx";
 
 const containerStyle = {
     paddingTop: '70px',
@@ -48,6 +48,7 @@ function App() {
                         <Route path="/signUp" element={<DefaultLayout><SignUp /></DefaultLayout>} />
                         <Route path="/admClient" element={<PrivateRoute element={<AdmClientSidebar />} allowedRoles={['SELLER']} />} />
                         <Route path="/stock" element={<PrivateRoute element={<StockSidebar />} allowedRoles={['SELLER']} />} />
+                        <Route path="/orders" element={<PrivateRoute element={<AdmOrdersSideBar/>} allowedRoles={['SELLER']} />} />
                     </Routes>
                 </Router>
             </AuthProvider>

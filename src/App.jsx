@@ -14,6 +14,7 @@ import StockSidebar from "./components/sidebar/stockSideBar.jsx";
 import AuthProvider from './AuthContext';
 import PrivateRoute from './PrivateRoute'; // Extract the PrivateRoute component into its own file
 import { createApolloClient } from './apolloClient';
+import AdmOrdersSideBar from "./components/sidebar/locations/admOrdersSideBar.jsx";
 
 const containerStyle = {
     paddingTop: '70px',

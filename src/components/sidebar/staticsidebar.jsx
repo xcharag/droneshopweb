@@ -1,8 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, Nav, Navbar} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import {useQuery} from "@apollo/client";
+import TopSellersModal from "../bestSellers/modals/topSellersModal.jsx";
 
 function staticSidebar() {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [showTopSellersModal, setShowTopSellersModal] = useState(false);
+    const openTopSellersModal = () => {
+        setShowTopSellersModal(true);
+    };
+    const closeTopSellersModal = () => {
+        setShowTopSellersModal(false);
+    };
 
     return (
         <div style={{
@@ -29,9 +39,12 @@ function staticSidebar() {
                         <Button as={Link} to="/" variant="secondary" size= "sm" className="mb-2">Inicio</Button>
                         <Button as={Link} to="/admClient" variant="secondary" size= "sm" block>Administrar Clientes</Button>
                         <Button as={Link} to="/stock" variant="secondary" size= "sm" block>Administrar Productos</Button>
+                        <Button as={Link} to="/orders" variant="secondary" size= "sm" block>Ver Órdenes</Button>
+                        <Button variant='success' size='sm' onClick={openTopSellersModal}>Mejores vendedores</Button>
                     </div>
                 </div>
             </Nav>
+            <TopSellersModal show={showTopSellersModal} handleHide={closeTopSellersModal} />
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup, Button, Form, Alert, Modal } from 'react-bootstrap'; // Import Modal from react-bootstrap
+import { Container, Row, Col, ListGroup, Button, Form, Alert, Modal } from 'react-bootstrap';
 import { BsTrash } from 'react-icons/bs';
 import CreditCardForm from './components/creditcardmethod.jsx';
 import QRPayForm from './components/qrmethod.jsx';
@@ -8,16 +8,15 @@ import Header from "../header/header.jsx";
 import TotalPriceSquare from "./components/totalPrice.jsx";
 import { useMutation } from '@apollo/client';
 import { ADD_ORDER_MUTATION } from './queries/queries.js';
+import jsPDF from 'jspdf';
 
 const Cart = () => {
     const [paymentMethod, setPaymentMethod] = useState('creditCard');
     const [cartItems, setCartItems] = useState([]);
-    const [showModal, setShowModal] = useState(false); // State variable for controlling modal visibility
+    const [showModal, setShowModal] = useState(false);
 
-    // Mutation hook for executing the add_order mutation
     const [addOrder] = useMutation(ADD_ORDER_MUTATION);
 
-    // Load cart items from session storage
     useEffect(() => {
         const cartFromStorage = JSON.parse(sessionStorage.getItem('cart')) || [];
         setCartItems(cartFromStorage);
@@ -40,18 +39,27 @@ const Cart = () => {
         sessionStorage.setItem('cart', JSON.stringify(updatedCart));
     };
 
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        doc.text("Receipt", 10, 10);
+        doc.text("Order Summary:", 10, 20);
+        groupedCartItems.forEach((item, index) => {
+            doc.text(`${item.name} - Quantity: ${item.quantity} - Price: ${item.price}`, 10, 30 + (index * 10));
+        });
+        doc.text(`Total Price: ${totalPrice}`, 10, 30 + (groupedCartItems.length * 10));
+        doc.save("receipt.pdf");
+    };
+
     const handleSubmit = async () => {
         try {
-            const client = JSON.parse(localStorage.getItem('client')); // Retrieve client ID from localStorage
+            const client = JSON.parse(localStorage.getItem('client'));
 
-            // Prepare the order input object with required parameters
             const orderInput = {
                 client: client.id,
                 order: groupedCartItems.map(item => ({ id: item.id, quantity: item.quantity })),
                 status: 'PENDIENTE'
             };
 
-            // Execute the add_order mutation
             await addOrder({
                 variables: {
                     input: orderInput
@@ -63,19 +71,16 @@ const Cart = () => {
                 }
             });
 
-            // Clear cart after successful submission
             setCartItems([]);
             sessionStorage.removeItem('cart');
 
-            // Show the modal after successful submission
             setShowModal(true);
+            generatePDF(); // Generate and download the PDF after successful submission
         } catch (error) {
             console.error('Error placing order:', error);
-            // Optionally, display an error message to the user
         }
     };
 
-    // Group items by ID and calculate the quantity
     const groupedItems = cartItems.reduce((grouped, item) => {
         if (!grouped[item.id]) {
             grouped[item.id] = { ...item, quantity: 0 };
@@ -84,7 +89,6 @@ const Cart = () => {
         return grouped;
     }, {});
 
-    // Convert grouped items back to an array
     const groupedCartItems = Object.values(groupedItems);
 
     const totalPrice = groupedCartItems.reduce((total, item) => total + parseFloat(item.price) * item.quantity, 0);
@@ -140,7 +144,6 @@ const Cart = () => {
                     </Col>
                 </Row>
                 <Header />
-                {/* Modal for showing successful purchase */}
                 <Modal show={showModal} onHide={() => setShowModal(false)}>
                     <Modal.Header closeButton>
                         <Modal.Title>Compra Exitosa</Modal.Title>

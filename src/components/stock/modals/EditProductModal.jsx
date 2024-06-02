@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Button, Form, Modal, ModalBody, ModalHeader } from "react-bootstrap";
+// eslint-disable-next-line no-unused-vars
+import React from "react";
+import { Button, Form, Modal, ModalHeader } from "react-bootstrap";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PRODUCT } from "../gql/mutations.js";
 import * as yup from "yup";
@@ -21,18 +22,14 @@ const EditProductModal = ({ show, handleClose, productData, reloadProducts }) =>
     if (!productData) {
         return null;
     }
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditedProduct({ ...editedProduct, [name]: value });
-    }
-
     const handleEditProduct = async (values, { setSubmitting, resetForm }) => {
         try {
             console.log(values);
+            // eslint-disable-next-line react/prop-types
             console.log(productData.id);
             await updateProduct({
                 variables: {
+                    // eslint-disable-next-line react/prop-types
                     productUpdateId: productData.id,
                     input: {
                         name: values.name,
@@ -62,10 +59,15 @@ const EditProductModal = ({ show, handleClose, productData, reloadProducts }) =>
 
             <Formik
                 initialValues={{
+                    // eslint-disable-next-line react/prop-types
                     name: productData.name,
+                    // eslint-disable-next-line react/prop-types
                     stock: productData.stock,
+                    // eslint-disable-next-line react/prop-types
                     price: productData.price,
+                    // eslint-disable-next-line react/prop-types
                     model: productData.model,
+                    // eslint-disable-next-line react/prop-types
                     specifications: productData.specifications
                 }}
                 validationSchema={productSchema}

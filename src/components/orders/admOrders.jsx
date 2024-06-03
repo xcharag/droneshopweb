@@ -47,7 +47,7 @@ const SellerOrders = () => {
         <div className="text-white p-4 mt-5 m-5" style={{minHeight: '100vh', backgroundColor: '#41484e'}}>
             <Container>
                 <div className="d-flex justify-content-start mb-3">
-                    <h2>Órdenes del Vendedor</h2>
+                    <h2>Administrar Pedidos</h2>
                 </div>
                 <div className="overflow-auto">
                     <Table striped bordered hover variant="dark" responsive="sm">

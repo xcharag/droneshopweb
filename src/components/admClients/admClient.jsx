@@ -12,7 +12,7 @@ const clientSchema = yup.object().shape({
     phoneNumber: yup.string().required('El teléfono del cliente es requerido'),
     email: yup.string().email('El email no es válido').required('El email del cliente es requerido'),
     password: yup.string().required('La contraseña del cliente es requerida')
-});
+}); // Validación de los campos del formulario
 
 const AdmClient = () => {
     const [clients, setClients] = useState([]);

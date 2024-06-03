@@ -16,9 +16,6 @@ const CreditCardForm = () => {
                 <Form.Label>CVV</Form.Label>
                 <Form.Control type="text" placeholder="CVV" />
             </Form.Group>
-            <Button variant="primary" type="submit">
-                Submit Payment
-            </Button>
         </div>
     );
 };
